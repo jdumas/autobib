@@ -1,4 +1,5 @@
 # Local libs
+import utils
 import nomenclature
 
 # Third party libs
@@ -76,8 +77,13 @@ def crossref_query(authors, title):
     subtitles = [x for x in res_json['subtitle'] if not str.isupper(x)]
     if len(subtitles) > 0:
         # Discard subtitle that are all uppercase
-        new_title = ' '.join(res_json['title']) + ": " + ' '.join(subtitles)
-        assert(new_title.lower() != res_bib['title'].lower())
+        title = ' '.join(res_json['title'])
+        subtitle = ' '.join(subtitles)
+        if utils.simratio(title, subtitle) > 0.95:
+            # Don't repeat title if the subtitle is too similar to the title
+            new_title = title
+        else:
+            new_title = title + ": " + subtitle
         res_bib['title'] = new_title
     else:
         new_title = ' '.join(res_json['title'])
