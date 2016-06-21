@@ -1,4 +1,5 @@
-#! /bin/python3
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 # Local libs
 import utils
@@ -217,8 +218,8 @@ def rename_folder(folder, use_backup):
             if os.path.exists(old_path):
                 os.rename(old_path, new_path)
                 new_val = utils.encode_filename_field(new_filename)
-                if entry['file'] in queried_files:
-                    idx = queried_files[entry['file']]
+                if old_filename in queried_files:
+                    idx = queried_files[old_filename]
                     queried_db.entries[idx]['file'] = new_val
                 entry['file'] = new_val
 
@@ -247,12 +248,15 @@ def sync_folder(folder, use_backup):
         to_delete = []
         for i, entry in enumerate(db.entries):
             guess = nomenclature.gen_filename(entry)
+            if 'file' in entry:
+                guess = utils.decode_filename_field(entry['file'])
             match, score = utils.most_similar_filename(guess, unmatched)
             if score >= 0.90:
                 unmatched.remove(match)
                 entry['file'] = utils.encode_filename_field(match)
             else:
-                print(termcolor.colored(bib_file, "magenta") + ": will remove '{0}'".format(guess))
+                print(termcolor.colored(bib_file, "magenta") +
+                      ": ({1}) will remove '{0}'".format(guess, termcolor.colored(score, "yellow")))
                 to_delete.append(i)
 
         # Delete unmatched entries

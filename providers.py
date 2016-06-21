@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 # Local libs
 import utils
 import nomenclature
@@ -29,6 +32,10 @@ def pick_best(authors, title, item1, item2):
     """
     def compare(x):
         return difflib.SequenceMatcher(None, title.lower(), x.lower()).ratio()
+    if not item1['title']:
+        return item2
+    elif not item2['title']:
+        return item2
     r1 = compare(item1['title'][0])
     r2 = compare(item2['title'][0])
     return item1 if r1 > r2 else item2
@@ -66,9 +73,16 @@ def crossref_query(authors, title):
     doi = best_item['DOI']
     res_json = best_item
 
+    # If the entry is invalid, return a score of 0
+    if 'author' not in res_json or not res_json['title']:
+        print_score(0)
+        return (None, res_json, 0)
+
     # Retrieve metadata as bibtex entry
     res_bib = cn.content_negotiation(ids=doi, format="bibentry")
     res_bib = re.sub('Ă¤', 'ä', res_bib)
+    res_bib = re.sub('Ă', 'Ö', res_bib)
+    res_bib = re.sub('รถ', 'ö', res_bib)
     db = bibtexparser.loads(res_bib)
     assert(len(db.entries) == 1)
     res_bib = db.entries[0]
@@ -79,7 +93,7 @@ def crossref_query(authors, title):
         # Discard subtitle that are all uppercase
         title = ' '.join(res_json['title'])
         subtitle = ' '.join(subtitles)
-        if utils.simratio(title, subtitle) > 0.95:
+        if title.lower().startswith(subtitle.lower()) or utils.simratio(title, subtitle) > 0.95:
             # Don't repeat title if the subtitle is too similar to the title
             new_title = title
         else:
@@ -92,6 +106,7 @@ def crossref_query(authors, title):
     # Post-process title
     res_bib['title'] = re.sub('\*$', '', res_bib['title'])
     res_bib['title'] = re.sub('^[0-9]*\. ', '', res_bib['title'])
+    res_bib['title'] = re.sub('\.*$', '', res_bib['title'])
 
     # If bibtex entry has a 'journal' field, then use the longest alias from the json
     if 'journal' in res_bib:
@@ -130,6 +145,10 @@ def scholarly_query(authors, title):
     res.fill()
     if 'abstract' in res.bib:
         del res.bib['abstract']
+
+    # Post-process title
+    res.bib['title'] = re.sub('\.*$', '', res.bib['title'])
+
     print('S: ' + nomenclature.gen_filename(res.bib))
     return res.bib
 
