@@ -28,7 +28,7 @@ Dependencies
 
 Pip only:
 
-    pip install --user bibtexparser habanero scholarly titlecase latexcodec termcolor colorama
+    pip install --user habanero scholarly bibtexparser latexcodec titlecase termcolor colorama
 
 Mixed (Archlinux):
 
@@ -43,7 +43,7 @@ Usage
     usage: autobib.py [-h] [-b] [-c] [-g] [-f] [-s] [-r] [-m] [-d] [filename]
 
     positional arguments:
-      filename        input folder
+      filename        input file/folder
 
     optional arguments:
       -h, --help      show this help message and exit
