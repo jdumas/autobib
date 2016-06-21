@@ -62,12 +62,11 @@ How It Works
 
 This program relies heavily on the [python-bibtexparser](https://github.com/sciunto-org/python-bibtexparser) library for reading/writing formated bibtex files.
 
-The queries are currently done using 2 different backends : [Crossref](http://www.crossref.org/) and [Google Scholar](https://scholar.google.fr/). Crossref provides a nice API, and returns results with very few false negative[^1]. False positive and discarded according to the confidence score returned by Crossref.
+The queries are currently done using 2 different backends : [Crossref](http://www.crossref.org/) and [Google Scholar](https://scholar.google.fr/). Crossref provides a nice API, and returns results with very few false negative<sup>[1](#cr)</sup>. False positive and discarded according to the confidence score returned by Crossref.
 
 Papers that were not matched using Crossref can be queried on Google Scholar, which doesn't offer a query API and might block you if you have too many requests. But it usually finds the more obscure references you might have in your library.
 
-
-[^1]: It might happen if you have a paper that has been published in a small conference, but has been republished latter in a good journal by the same authors under almost the same title. So always check the results that are returned by the online queries.
+<sub><sup><a name="cr">1</a>: It might happen if you have a paper that has been published in little known conference, but has been republished latter in a higher-impact journal, by the same authors and under almost the same title. So be wary to always check the results that are returned by the online queries.</sup></sub>
 
 
 Manual Override
@@ -83,14 +82,13 @@ When calling `./autobib.py --format`, the program will read both `.queried.bib` 
 Customization
 -------------
 
-There is several aspects of `autobib.py` which can be customized. The 2 files that you can modify to fits your need are as follows:
+There is several aspects of `autobib.py` which can be customized. The 2 files that you can modify to fit your need are `nomenclature.py` and `config.py`.
 
-`nomenclature.py`
-: * Functions `parse_filename` and `gen_filename` defines the expected naming convention of a file. By default it is something like `(Author1, Author2) Title of the paper.pdf`, but maybe you want to include the year, maybe you want to keep only the author initials.
-: * The function `gen_bibkey` defines how bibkey identifiers are generated when invoking `./autobib.py --format`. By default it uses ACM style `Sigmund:2001:ALT`.
+* Functions `parse_filename` and `gen_filename` defines the expected naming convention of a file. By default it is something like `(Author1, Author2) Title of the paper.pdf`, but maybe you want to include the year, maybe you want to keep only the author initials.
 
-`config.py`
-: This file defines capitalization and pattern substitution rules. You can complete the lists of `uppercase_words` and `lowercase_words`. For now pattern substitution are hardcorded, but this will change in the future.
+* The function `gen_bibkey` defines how bibkey identifiers are generated when invoking `./autobib.py --format`. By default it uses ACM style `Sigmund:2001:ALT`.
+
+* This file defines capitalization and pattern substitution rules. You can complete the lists of `uppercase_words` and `lowercase_words`. For now pattern substitutions are hardcorded, but this will change in the future.
 
 
 Disclaimer
