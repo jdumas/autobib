@@ -104,4 +104,4 @@ Also, there is no telling that the Google Scholar backend will still work tomorr
 Roadmap
 -------
 
-Cf. the [TODO list](TODO.txt).
+Cf. the [TODO list](TODO.md).
