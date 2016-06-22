@@ -103,6 +103,8 @@ def query_google_folder(folder, use_backup):
 
         # Google Scholar
         rbib = providers.scholarly_query(authors, title)
+        if rbib is None:
+            continue
 
         # Append filename and store entry
         rbib['file'] = utils.encode_filename_field(file)

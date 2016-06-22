@@ -12,6 +12,7 @@ import bibtexparser
 # System libs
 import re
 import os
+import json
 
 
 def parse_filename(path):
@@ -71,12 +72,13 @@ def gen_filename(record):
     title = re.sub('\\\\textendash  ', '- ', title)
     title = utils.strip_accents(codecs.decode(title, "ulatex"))
     title = re.sub('([\{\}])', '', title)
-    title = re.sub(': ', ' - ', title)
+    title = re.sub(' *: ', ' - ', title)
     title = re.sub(' *— *', ' - ', title)
     title = re.sub('–', '-', title)
     title = re.sub('\$\\mathplus \$', '+', title)
     title = re.sub('\\\\textquotesingle ', "'", title)
     title = utils.to_titlecase(title)
+    title = re.sub('"', '', title)
 
     return prefix + title + '.pdf'
 
@@ -93,6 +95,10 @@ def gen_bibkey(record, all_keys):
         A string which corresponds to the newly generated unique bibtex key.
         The argument 'all_keys' is also appended with the new key.
     """
+    if 'year' not in record:
+        record_str = json.dumps(record, sort_keys=True, indent=4, separators=(',', ': '))
+        raise ValueError("Field 'year' not present in bibtex entry:\n" + record_str)
+
     record_copy = record.copy()
     record_copy = bibtexparser.customization.author(record_copy)
 

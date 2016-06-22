@@ -83,6 +83,7 @@ def crossref_query(authors, title):
     res_bib = re.sub('Ă¤', 'ä', res_bib)
     res_bib = re.sub('Ă', 'Ö', res_bib)
     res_bib = re.sub('รถ', 'ö', res_bib)
+    res_bib = re.sub('Ăź', 'ü', res_bib)
     db = bibtexparser.loads(res_bib)
     assert(len(db.entries) == 1)
     res_bib = db.entries[0]
@@ -141,7 +142,10 @@ def scholarly_query(authors, title):
     """
     query = ' '.join(authors) + ' ' + title
     search_query = scholarly.search_pubs_query(query)
-    res = next(search_query)
+    try:
+        res = next(search_query)
+    except StopIteration:
+        return None
     res.fill()
     if 'abstract' in res.bib:
         del res.bib['abstract']
