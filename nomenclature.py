@@ -67,7 +67,9 @@ def gen_filename(record):
     else:
         prefix = '(' + ', '.join(last_names) + ') '
 
-    title = utils.strip_accents(codecs.decode(record_copy['title'], "ulatex"))
+    title = record_copy['title']
+    title = re.sub('\\\\textendash  ', '- ', title)
+    title = utils.strip_accents(codecs.decode(title, "ulatex"))
     title = re.sub('([\{\}])', '', title)
     title = re.sub(': ', ' - ', title)
     title = re.sub(' *— *', ' - ', title)
