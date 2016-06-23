@@ -198,6 +198,7 @@ def homogenize_latex_encoding(record):
         if val not in ('ID', 'file'):
             record[val] = bibtexparser.latexenc.string_to_latex(record[val])
             record[val] = record[val].replace('\\i', 'i')
+            record[val] = record[val].replace('\n', ' ').replace('\r', '')
             if val == 'title':
                 record[val] = re.sub('GCMMA-two', 'GCMMA - two', record[val])
                 record[val] = to_titlecase(record[val])

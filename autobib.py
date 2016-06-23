@@ -337,6 +337,10 @@ def format_file(filename, use_backup):
         Nothing, but update the given file.
     """
     db = utils.read_bib_file(filename, custom=True)
+    # Generate bibkeys
+    context = set()
+    for entry in db.entries:
+        entry['ID'] = nomenclature.gen_bibkey(entry, context)
     utils.write_with_backup(filename, utils.write_bib(db, order=True), use_backup)
 
 
