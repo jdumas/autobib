@@ -84,6 +84,8 @@ def crossref_query(authors, title):
     res_bib = re.sub('Ă', 'Ö', res_bib)
     res_bib = re.sub('รถ', 'ö', res_bib)
     res_bib = re.sub('Ăź', 'ü', res_bib)
+    res_bib = re.sub('Ěo', 'ö', res_bib)
+    res_bib = re.sub('ďż˝', 'ø', res_bib)
     db = bibtexparser.loads(res_bib)
     assert(len(db.entries) == 1)
     res_bib = db.entries[0]

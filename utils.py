@@ -2,10 +2,9 @@
 # -*- coding: utf-8 -*-
 
 # Local libs
-import config
+import nomenclature
 
 # Third party libs
-import titlecase
 import bibtexparser
 from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bparser import BibTexParser
@@ -30,17 +29,6 @@ else:
 def strip_accents(s):
     return ''.join(c for c in unicodedata.normalize('NFD', s)
                    if unicodedata.category(c) != 'Mn')
-
-
-def to_titlecase(text):
-    def abbreviations(word, **kwargs):
-        if word.upper() in config.uppercase_words:
-            return word.upper()
-        if word.lower() in config.lowercase_words:
-            return word.lower()
-        if word.startswith('\\'):
-            return word
-    return titlecase.titlecase(text, callback=abbreviations)
 
 
 def has_pdfs(folder):
@@ -175,37 +163,6 @@ def create_file_dict(db):
     return files
 
 
-def homogenize_latex_encoding(record):
-    """
-    Homogenize the latex encoding style for bibtex.
-
-    Args:
-        record (dict): a record.
-
-    Returns:
-        Customized record.
-    """
-
-    # Apply functions from bibtexparser.customization
-    record = bibtexparser.customization.convert_to_unicode(record)
-    record = bibtexparser.customization.page_double_hyphen(record)
-    # Reorganize authors
-    record = bibtexparser.customization.author(record)
-    if 'author' in record:
-        record['author'] = ' and '.join(record['author'])
-    # Convert to latex string and titlecase the title
-    for val in record:
-        if val not in ('ID', 'file'):
-            record[val] = bibtexparser.latexenc.string_to_latex(record[val])
-            record[val] = record[val].replace('\\i', 'i')
-            record[val] = record[val].replace('\n', ' ').replace('\r', '')
-            record[val] = re.sub('\\\\textdollar \\\\textbackslash mathplus\\\\textdollar ', '+', record[val])
-            if val == 'title':
-                record[val] = re.sub('GCMMA-two', 'GCMMA - two', record[val])
-                record[val] = to_titlecase(record[val])
-    return record
-
-
 def read_bib_file(filename, custom=False):
     """
     Read bibtex file.
@@ -228,7 +185,7 @@ def read_bib_file(filename, custom=False):
     parser = None
     if custom:
         parser = BibTexParser()
-        parser.customization = homogenize_latex_encoding
+        parser.customization = nomenclature.homogenize_latex_encoding
 
     # Create database from string
     return bibtexparser.loads(bibtex_str, parser=parser)

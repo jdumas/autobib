@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 
 # Local libs
+import config
 import utils
 
 # Third party libs
+import titlecase
 import codecs
 import latexcodec
 import bibtexparser
@@ -13,6 +15,27 @@ import bibtexparser
 import re
 import os
 import json
+
+
+def to_titlecase(text):
+    """
+    Converts string into a titlecased version of itself.
+    A list of uppercase or lowercase abbreviation is read from config.py.
+
+    Args:
+        text (str): input string to convert.
+
+    Returns:
+        A titlecased version of the input string.
+    """
+    def abbreviations(word, **kwargs):
+        if word.upper() in config.uppercase_words:
+            return word.upper()
+        if word.lower() in config.lowercase_words:
+            return word.lower()
+        if word.startswith('\\'):
+            return word
+    return titlecase.titlecase(text, callback=abbreviations)
 
 
 def parse_filename(path):
@@ -77,7 +100,7 @@ def gen_filename(record):
     title = re.sub('–', '-', title)
     title = re.sub('\$\\mathplus \$', '+', title)
     title = re.sub('\\\\textquotesingle ', "'", title)
-    title = utils.to_titlecase(title)
+    title = to_titlecase(title)
     title = re.sub('"', '', title)
 
     return prefix + title + '.pdf'
@@ -125,3 +148,37 @@ def gen_bibkey(record, all_keys):
 
     all_keys.add(bibkey)
     return bibkey
+
+
+def homogenize_latex_encoding(record):
+    """
+    Homogenize the latex encoding style for bibtex.
+
+    Args:
+        record (dict): a record.
+
+    Returns:
+        Customized record.
+    """
+
+    # Apply functions from bibtexparser.customization
+    record = bibtexparser.customization.convert_to_unicode(record)
+    record = bibtexparser.customization.page_double_hyphen(record)
+    # Reorganize authors
+    record = bibtexparser.customization.author(record)
+    if 'author' in record:
+        record['author'] = ' and '.join(record['author'])
+    # Convert to latex string and titlecase the title
+    for val in record:
+        if val not in ('ID', 'file'):
+            # record[val] = bibtexparser.latexenc.string_to_latex(record[val])
+            record[val] = re.sub('\\\\?&', '\\&', record[val])
+            record[val] = record[val].replace('\\i', 'i')
+            record[val] = record[val].replace('\n', ' ').replace('\r', '')
+            record[val] = re.sub('\\\\textdollar \\\\textbackslash mathplus\\\\textdollar ', '+', record[val])
+            record[val] = re.sub('\$\\\\mathplus\$', '+', record[val])
+            if val == 'title':
+                record[val] = re.sub('GCMMA-two', 'GCMMA - two', record[val])
+                record[val] = re.sub('ShapeOp—A', 'ShapeOp — A', record[val])
+                record[val] = to_titlecase(record[val])
+    return record
