@@ -129,6 +129,7 @@ def gen_bibkey(record, all_keys):
     first_author = record_copy['author'][0]
     stripped = utils.strip_accents(codecs.decode(first_author, "ulatex"))
     last_name = stripped.split(',')[0]
+    last_name = last_name.replace('ø', 'o')
     last_name = re.sub('([^a-zA-Z])', '', last_name)
 
     # Then get the first 3 initials of the article title
