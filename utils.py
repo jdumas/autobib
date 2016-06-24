@@ -199,6 +199,7 @@ def homogenize_latex_encoding(record):
             record[val] = bibtexparser.latexenc.string_to_latex(record[val])
             record[val] = record[val].replace('\\i', 'i')
             record[val] = record[val].replace('\n', ' ').replace('\r', '')
+            record[val] = re.sub('\\\\textdollar \\\\textbackslash mathplus\\\\textdollar ', '+', record[val])
             if val == 'title':
                 record[val] = re.sub('GCMMA-two', 'GCMMA - two', record[val])
                 record[val] = to_titlecase(record[val])
