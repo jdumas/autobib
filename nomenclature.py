@@ -163,14 +163,18 @@ def homogenize_latex_encoding(record):
     Returns:
         Customized record.
     """
-
+    # Pre-processing
+    for val in record:
+        if val not in ('ID', 'file'):
+            record[val] = record[val].replace('\\copyright', '©')
     # Apply functions from bibtexparser.customization
     record = bibtexparser.customization.convert_to_unicode(record)
     record = bibtexparser.customization.page_double_hyphen(record)
     # Reorganize authors
     record = bibtexparser.customization.author(record)
     if 'author' in record:
-        record['author'] = ' and '.join(record['author'])
+        stripped = [name.rstrip(', ') for name in record['author']]
+        record['author'] = ' and '.join(stripped)
     # Convert to latex string and titlecase the title
     for val in record:
         if val not in ('ID', 'file'):
