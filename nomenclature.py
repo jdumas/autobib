@@ -118,9 +118,10 @@ def gen_bibkey(record, all_keys):
         A string which corresponds to the newly generated unique bibtex key.
         The argument 'all_keys' is also appended with the new key.
     """
-    if 'year' not in record:
-        record_str = json.dumps(record, sort_keys=True, indent=4, separators=(',', ': '))
-        raise ValueError("Field 'year' not present in bibtex entry:\n" + record_str)
+    for field in ['year', 'title', 'author']:
+        if field not in record:
+            record_str = json.dumps(record, sort_keys=True, indent=4, separators=(',', ': '))
+            raise ValueError("Missing field '{0}' in bibtex entry:\n{1}".format(field, record_str))
 
     record_copy = record.copy()
     record_copy = bibtexparser.customization.author(record_copy)
@@ -135,6 +136,7 @@ def gen_bibkey(record, all_keys):
     # Then get the first 3 initials of the article title
     curated_title = re.sub('([^a-zA-Z])', ' ', record_copy['title'])
     short_title = ''.join(s[0] for s in curated_title.split())
+    short_title += curated_title.split()[-1][1:]
     short_title = short_title[:3].upper()
 
     # Key is Author:Year:Initials
