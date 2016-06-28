@@ -129,6 +129,20 @@ def crossref_query(authors, title):
     if 'year' not in res_bib:
         score = 0
 
+    # Fix incorrect year in crossref entry
+    if 'published-print' in res_json:
+        item = res_json['published-print']
+        if 'date-parts' in item and len(item['date-parts']) == 1:
+            date = item['date-parts'][0]
+            year = date[0]
+            month = date[1] if len(date) > 1 else None
+            if year != res_bib['year']:
+                res_bib['year'] = str(year)
+                if not month and 'month' in res_bib:
+                    del res_bib['month']
+                else:
+                    res_bib['month'] = str(month)
+
     print('C: ' + nomenclature.gen_filename(res_bib))
     print_score(score)
 
