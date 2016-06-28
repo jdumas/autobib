@@ -62,6 +62,11 @@ def crossref_query(authors, title):
     x = cr.works(query=query)
     assert(x['status'] == "ok")
 
+    # No result found
+    if not x['message']['items']:
+        print_score(0)
+        return (None, [], 0)
+
     best_item = x['message']['items'][0]
     for item in x['message']['items']:
         if item['score'] < best_item['score']:

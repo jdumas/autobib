@@ -9,8 +9,10 @@ It can also do other stuff, such as autoformating you `.bib` files, generating u
 This program has been tested with **Python 3.5**, and I don't know if it works with Python 2.7.
 
 
-Example
--------
+Examples
+--------
+
+##### Example 1:
 
     ./autobib.py /home/username/biblio -cgf
 
@@ -22,13 +24,18 @@ Note that it only use filename information (no pdf metadata query yet), so each 
 
 This can of course be customized, but you'll need to adapt the functions `parse_filename` and `gen_filename` to your liking.
 
+##### Example 2:
+
+    ./autobib.py /home/username/biblio -srm
+
+Will synchronize the entries in your bibtex with the files in each folder (by updating the `file` field, or removing the entry if it does not exist). Then `-r` will rename the files according to the bibtex entries (the program always asks for confirmation before doing something). Finally, `-m` creates a `master.bib` file at the root folder that is being process (effectively merging and sorting each entry in subfolders).
 
 Dependencies
 ------------
 
 Pip only:
 
-    pip install --user habanero scholarly bibtexparser latexcodec titlecase termcolor colorama
+    pip3 install --user habanero scholarly bibtexparser latexcodec titlecase termcolor colorama
 
 Mixed (Archlinux):
 
