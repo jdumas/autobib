@@ -55,6 +55,16 @@ def simratio(file1, file2):
     return difflib.SequenceMatcher(None, file1.lower(), file2.lower()).ratio()
 
 
+def get_title(record):
+    title = record['title']
+    if 'booktitle' in record:
+        if title:
+            title = record['booktitle'] + ' - ' + title
+        else:
+            title = record['booktitle']
+    return title
+
+
 def most_similar_filename(guess, candidates):
     """
     Return the most similar filename amongst files in given folder.

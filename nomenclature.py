@@ -92,7 +92,7 @@ def gen_filename(record):
     else:
         prefix = '(' + ', '.join(last_names) + ') '
 
-    title = record_copy['title']
+    title = utils.get_title(record_copy)
     title = re.sub('\\\\textendash  ', '- ', title)
     title = utils.strip_accents(codecs.decode(title, "ulatex"))
     title = re.sub('([\{\}])', '', title)
@@ -136,7 +136,7 @@ def gen_bibkey(record, all_keys):
     last_name = re.sub('([^a-zA-Z])', '', last_name)
 
     # Then get the first 3 initials of the article title
-    curated_title = re.sub('([^a-zA-Z])', ' ', record_copy['title'])
+    curated_title = re.sub('([^a-zA-Z])', ' ', utils.get_title(record_copy))
     short_title = ''.join(s[0] for s in curated_title.split())
     short_title += curated_title.split()[-1][1:]
     short_title = short_title[:3].upper()

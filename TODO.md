@@ -8,6 +8,7 @@
 - [ ] Check year against google scholar.
 - [ ] Add a mode to enable/disable utf8 in resulting .bib
 - [ ] Add functions to rename between different naming conventions
+- [ ] Add a function to update the bibkeys in a .tex project (update the .bib as well as all the citations the .tex files of the project).
 
 # Options
 - [ ] -e: --eval bib (show diff dist between filenames and bib entry)
