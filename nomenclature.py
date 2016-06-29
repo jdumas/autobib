@@ -83,6 +83,7 @@ def gen_filename(record):
         name = re.sub('~', ' ', name)
         name = re.sub("\\\\'ı", "i", name)
         name = re.sub("\\\\`ı", "i", name)
+        name = re.sub("ı", "i", name)
         last_names.append(name)
 
     # If there are more than 4 authors, use the 'et al.' form
@@ -98,6 +99,7 @@ def gen_filename(record):
     title = re.sub(' *: ', ' - ', title)
     title = re.sub(' *— *', ' - ', title)
     title = re.sub('–', '-', title)
+    title = re.sub('/', '-', title)
     title = re.sub('\$\\mathplus \$', '+', title)
     title = re.sub('\\\\textquotesingle ', "'", title)
     title = to_titlecase(title)

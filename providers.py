@@ -91,6 +91,7 @@ def crossref_query(authors, title):
     res_bib = re.sub('Ăź', 'ü', res_bib)
     res_bib = re.sub('Ěo', 'ö', res_bib)
     res_bib = re.sub('ďż˝', 'ø', res_bib)
+    res_bib = re.sub('ĂŤ', 'ë', res_bib)
     db = bibtexparser.loads(res_bib)
     assert(len(db.entries) == 1)
     res_bib = db.entries[0]
@@ -136,12 +137,14 @@ def crossref_query(authors, title):
             date = item['date-parts'][0]
             year = date[0]
             month = date[1] if len(date) > 1 else None
-            if year != res_bib['year']:
+            if str(year) != res_bib['year']:
                 res_bib['year'] = str(year)
-                if not month and 'month' in res_bib:
+                if month is None and 'month' in res_bib:
                     del res_bib['month']
-                else:
-                    res_bib['month'] = str(month)
+                elif month is not None:
+                    assert(month >= 1 and month <= 12)
+                    month_str = utils.MONTHS[month - 1]
+                    res_bib['month'] = month_str
 
     print('C: ' + nomenclature.gen_filename(res_bib))
     print_score(score)

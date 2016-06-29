@@ -6,6 +6,8 @@
 - [ ] Rename feature should also rename supplemental material, if present.
 - [ ] Better/more consistent management of duplicated entries in `.queried.bib` and `.manual.bib` (don't query file which is present in `.manual.bib`)
 - [ ] Check year against google scholar.
+- [ ] Add a mode to enable/disable utf8 in resulting .bib
+- [ ] Add functions to rename between different naming conventions
 
 # Options
 - [ ] -e: --eval bib (show diff dist between filenames and bib entry)
