@@ -57,7 +57,7 @@ def simratio(file1, file2):
 
 def get_title(record):
     title = record['title']
-    if 'booktitle' in record:
+    if 'booktitle' in record and record['ENTRYTYPE'] == 'book':
         if title:
             title = record['booktitle'] + ' - ' + title
         else:
