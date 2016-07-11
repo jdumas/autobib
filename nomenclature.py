@@ -1,20 +1,20 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Local libs
-import config
-import utils
-
-# Third party libs
-import titlecase
-import codecs
-import latexcodec
-import bibtexparser
-
 # System libs
 import re
 import os
 import json
+import codecs
+
+# Third party libs
+import titlecase
+import latexcodec
+import bibtexparser
+
+# Local libs
+import config
+import utils
 
 
 def to_titlecase(text):
@@ -28,7 +28,7 @@ def to_titlecase(text):
     Returns:
         A titlecased version of the input string.
     """
-    def abbreviations(word, **kwargs):
+    def abbreviations(word, **_kwargs):
         if word.upper() in config.uppercase_words:
             return word.upper()
         if word.lower() in config.lowercase_words:
@@ -52,11 +52,11 @@ def parse_filename(path):
         None if the file should not be processed.
     """
     file = os.path.basename(path)
-    if re.search('supplement[a-z]*( material)?(\))?.pdf', file, re.IGNORECASE):
+    if re.search('supplement[a-z]*( material)?(\\))?.pdf', file, re.IGNORECASE):
         return None  # Don't process supplementals
-    assert(file.endswith(".pdf"))
-    match = re.search('\((.*?)( et al.)?\) (.*).pdf', file)
-    assert(match)
+    assert file.endswith(".pdf")
+    match = re.search('\\((.*?)( et al.)?\\) (.*).pdf', file)
+    assert match
     authors = match.group(1).split(', ')
     title = match.group(3)
     return (authors, title)
@@ -79,7 +79,7 @@ def gen_filename(record):
     last_names = []
     for author in record_copy['author']:
         stripped = utils.strip_accents(codecs.decode(author, "ulatex"))
-        name = re.sub('([\{\}])', '', stripped.split(',')[0])
+        name = re.sub('([\\{\\}])', '', stripped.split(',')[0])
         name = re.sub('~', ' ', name)
         name = re.sub("\\\\'ı", "i", name)
         name = re.sub("\\\\`ı", "i", name)
@@ -95,12 +95,12 @@ def gen_filename(record):
     title = utils.get_title(record_copy)
     title = re.sub('\\\\textendash  ', '- ', title)
     title = utils.strip_accents(codecs.decode(title, "ulatex"))
-    title = re.sub('([\{\}])', '', title)
+    title = re.sub('([\\{\\}])', '', title)
     title = re.sub(' *: ', ' - ', title)
     title = re.sub(' *— *', ' - ', title)
     title = re.sub('–', '-', title)
     title = re.sub('/', '-', title)
-    title = re.sub('\$\\mathplus \$', '+', title)
+    title = re.sub('\\$\\mathplus \\$', '+', title)
     title = re.sub('\\\\textquotesingle ', "'", title)
     title = to_titlecase(title)
     title = re.sub('"', '', title)
@@ -185,7 +185,7 @@ def homogenize_latex_encoding(record):
             record[val] = record[val].replace('\\i', 'i')
             record[val] = record[val].replace('\n', ' ').replace('\r', '')
             record[val] = re.sub('\\\\textdollar \\\\textbackslash mathplus\\\\textdollar ', '+', record[val])
-            record[val] = re.sub('\$\\\\mathplus\$', '+', record[val])
+            record[val] = re.sub('\\$\\\\mathplus\\$', '+', record[val])
             if val == 'title':
                 record[val] = re.sub('GCMMA-two', 'GCMMA - two', record[val])
                 record[val] = re.sub('ShapeOp—A', 'ShapeOp — A', record[val])

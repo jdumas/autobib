@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Local libs
-import utils
-import nomenclature
+# System libs
+import re
+import difflib
 
 # Third party libs
 import termcolor
@@ -11,9 +11,9 @@ import bibtexparser
 import scholarly
 from habanero import Crossref, cn
 
-# System libs
-import re
-import difflib
+# Local libs
+import utils
+import nomenclature
 
 
 def print_score(sc):
@@ -26,7 +26,7 @@ def print_score(sc):
     print("Score: " + termcolor.colored(sc, color))
 
 
-def pick_best(authors, title, item1, item2):
+def pick_best(title, item1, item2):
     """
     Pick best record among two items with identical scores.
     """
@@ -60,7 +60,7 @@ def crossref_query(authors, title):
     query = ['+"' + name + '"' for name in authors]
     query = ' '.join(query) + ' +"' + title + '"'
     x = cr.works(query=query)
-    assert(x['status'] == "ok")
+    assert x['status'] == "ok"
 
     # No result found
     if not x['message']['items']:
@@ -72,7 +72,7 @@ def crossref_query(authors, title):
         if item['score'] < best_item['score']:
             break
         else:
-            best_item = pick_best(authors, title, best_item, item)
+            best_item = pick_best(title, best_item, item)
 
     # Retrieve DOI and json item
     doi = best_item['DOI']
@@ -93,7 +93,7 @@ def crossref_query(authors, title):
     res_bib = re.sub('ďż˝', 'ø', res_bib)
     res_bib = re.sub('ĂŤ', 'ë', res_bib)
     db = bibtexparser.loads(res_bib)
-    assert(len(db.entries) == 1)
+    assert len(db.entries) == 1
     res_bib = db.entries[0]
 
     # If article has subtitle(s), fix bibtex entry
@@ -113,9 +113,9 @@ def crossref_query(authors, title):
         res_bib['title'] = new_title
 
     # Post-process title
-    res_bib['title'] = re.sub('\*$', '', res_bib['title'])
-    res_bib['title'] = re.sub('^[0-9]*\. ', '', res_bib['title'])
-    res_bib['title'] = re.sub('\.*$', '', res_bib['title'])
+    res_bib['title'] = re.sub('\\*$', '', res_bib['title'])
+    res_bib['title'] = re.sub('^[0-9]*\\. ', '', res_bib['title'])
+    res_bib['title'] = re.sub('\\.*$', '', res_bib['title'])
 
     # If bibtex entry has a 'journal' field, then use the longest alias from the json
     if 'journal' in res_bib:
@@ -142,7 +142,7 @@ def crossref_query(authors, title):
                 if month is None and 'month' in res_bib:
                     del res_bib['month']
                 elif month is not None:
-                    assert(month >= 1 and month <= 12)
+                    assert month >= 1 and month <= 12
                     month_str = utils.MONTHS[month - 1]
                     res_bib['month'] = month_str
 
@@ -175,11 +175,11 @@ def scholarly_query(authors, title):
         del res.bib['abstract']
 
     # Post-process title
-    res.bib['title'] = re.sub('\.*$', '', res.bib['title'])
+    res.bib['title'] = re.sub('\\.*$', '', res.bib['title'])
 
     print('S: ' + nomenclature.gen_filename(res.bib))
     return res.bib
 
 
-def zotero_query(authors, title):
+def zotero_query(_authors, _title):
     return None

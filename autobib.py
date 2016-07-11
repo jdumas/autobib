@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Local libs
-import utils
-import nomenclature
-import providers
-
-# Third party libs
-import colorama
-import termcolor
-from bibtexparser.bibdatabase import BibDatabase
-
 # System libs
 import re
 import os
 import json
 import glob
 import argparse
+
+# Third party libs
+import colorama
+import termcolor
+from bibtexparser.bibdatabase import BibDatabase
+
+# Local libs
+import utils
+import nomenclature
+import providers
 
 # Python 2/3 compatibility
 try:
@@ -115,7 +115,7 @@ def query_google_folder(folder, use_backup):
     utils.write_with_backup(bib_path, utils.write_bib(db, order=False), use_backup)
 
 
-def format_folder(folder, use_backup, context=set()):
+def format_folder(folder, use_backup, context=None):
     """
     Pretty print bibtex file in the given folder.
     This function looks for a file named 'queried.bib' in the given folder,
@@ -145,7 +145,7 @@ def format_folder(folder, use_backup, context=set()):
         for entry in manual_database.entries:
             guess = nomenclature.gen_filename(entry)
             file = utils.encode_filename_field(guess)
-            best_score = 0
+            best_score = 0.0
             best_val = -1
             # Compare again other file entries
             for key, val in sorted(files.items()):
@@ -161,6 +161,9 @@ def format_folder(folder, use_backup, context=set()):
                 db.entries[best_val] = entry
             else:
                 db.entries.append(entry)
+
+    if context is None:
+        context = set()
 
     # Generate bibkeys
     for entry in db.entries:
@@ -285,7 +288,7 @@ def merge_folder_tree(folder, use_backup):
         Nothing, but creates a file named `master.bib` in the given folder.
     """
     db = BibDatabase()
-    for subdir, dirs, files in os.walk(os.path.abspath(folder)):
+    for subdir, _dirs, _files in os.walk(os.path.abspath(folder)):
         reldir = os.path.relpath(subdir, os.path.abspath(folder))
         bib_path = os.path.join(subdir, 'biblio.bib')
         subdb = utils.read_bib_file(bib_path)
@@ -311,11 +314,11 @@ def clean_folder_tree(folder):
         folder (str): relative or absolute path of the folder to cleanup.
     """
     res = []
-    for subdir, dirs, files in os.walk(folder):
-        files = [f for f in os.listdir(subdir) if re.search('.*\.bak([0-9]*)?', f)]
+    for subdir, _dirs, files in os.walk(folder):
+        files = [f for f in os.listdir(subdir) if re.search('.*\\.bak([0-9]*)?', f)]
         res = res + [os.path.join(subdir, f) for f in files]
     for path in res:
-        assert(os.path.exists(path))
+        assert os.path.exists(path)
         print("will remove '" + path + "'")
     if len(res) == 0:
         print("nothing to delete")
@@ -345,7 +348,7 @@ def format_file(filename, use_backup):
 
 
 def apply_folder_tree(folder, func, *args):
-    for subdir, dirs, files in os.walk(folder):
+    for subdir, _dirs, _files in os.walk(folder):
         if utils.has_pdfs(subdir):
             print(termcolor.colored('Entering: ' + subdir, "cyan", attrs=["bold"]))
             func(subdir, *args)
@@ -376,38 +379,41 @@ def parse_args():
 
 
 if __name__ == "__main__":
-    colorama.init()
-    args = parse_args()
-    input_path = "."
-    if args.filename:
-        input_path = args.filename
-    # If input path is a bib file
-    if input_path.endswith('.bib'):
-        assert(os.path.isfile(input_path))
-        # Format biblio
-        if args.format:
-            format_file(input_path, args.backup)
-    else:
-        assert(os.path.isdir(input_path))
-        # Crossref query
-        if args.crossref:
-            apply_folder_tree(input_path, query_crossref_folder, args.backup)
-        # Google scholar query
-        if args.google:
-            apply_folder_tree(input_path, query_google_folder, args.backup)
-        # Format biblio
-        if args.format:
-            context = set()
-            apply_folder_tree(input_path, format_folder, args.backup, context)
-        # Sync filenames
-        if args.sync:
-            apply_folder_tree(input_path, sync_folder, args.backup)
-        # Rename files
-        if args.rename:
-            apply_folder_tree(input_path, rename_folder, args.backup)
-        # Merge bib entries
-        if args.merge:
-            merge_folder_tree(input_path, args.backup)
-        # Cleanup backup files
-        if args.delete:
-            clean_folder_tree(input_path)
+    def run():
+        colorama.init()
+        args = parse_args()
+        input_path = "."
+        if args.filename:
+            input_path = args.filename
+        # If input path is a bib file
+        if input_path.endswith('.bib'):
+            assert os.path.isfile(input_path)
+            # Format biblio
+            if args.format:
+                format_file(input_path, args.backup)
+        else:
+            assert os.path.isdir(input_path)
+            # Crossref query
+            if args.crossref:
+                apply_folder_tree(input_path, query_crossref_folder, args.backup)
+            # Google scholar query
+            if args.google:
+                apply_folder_tree(input_path, query_google_folder, args.backup)
+            # Format biblio
+            if args.format:
+                context = set()
+                apply_folder_tree(input_path, format_folder, args.backup, context)
+            # Sync filenames
+            if args.sync:
+                apply_folder_tree(input_path, sync_folder, args.backup)
+            # Rename files
+            if args.rename:
+                apply_folder_tree(input_path, rename_folder, args.backup)
+            # Merge bib entries
+            if args.merge:
+                merge_folder_tree(input_path, args.backup)
+            # Cleanup backup files
+            if args.delete:
+                clean_folder_tree(input_path)
+
+    run()

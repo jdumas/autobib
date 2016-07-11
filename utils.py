@@ -1,14 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# Local libs
-import nomenclature
-
-# Third party libs
-import bibtexparser
-from bibtexparser.bwriter import BibTexWriter
-from bibtexparser.bparser import BibTexParser
-
 # System libs
 import re
 import os
@@ -18,6 +10,14 @@ import shutil
 import filecmp
 import difflib
 import unicodedata
+
+# Third party libs
+import bibtexparser
+from bibtexparser.bwriter import BibTexWriter
+from bibtexparser.bparser import BibTexParser
+
+# Local libs
+import nomenclature
 
 
 if sys.version_info.major == 2:
@@ -77,9 +77,9 @@ def most_similar_filename(guess, candidates):
         A tuple (match, score), with the name of the most similar match in the
         given list, and the score of such a match.
     """
-    best_score = 0
+    best_score = 0.0
     best_file = ""
-    if type(candidates) == str:
+    if isinstance(candidates, str):
         candidates = os.listdir(candidates)
     for file in candidates:
         sc = simratio(guess, file)
@@ -253,7 +253,7 @@ def encode_filename_field(filename):
     Returns:
         A string which corresponds to the escaped field to be used
     """
-    assert(filename.endswith(".pdf"))
+    assert filename.endswith(".pdf")
     return ':' + filename.replace(':', '\\:') + ':PDF'
 
 
@@ -267,8 +267,8 @@ def decode_filename_field(text):
     Returns:
         A string which corresponds to the decoded file name.
     """
-    assert(text.endswith(":PDF"))
+    assert text.endswith(":PDF")
     match = re.search(':(.*):PDF', text)
-    assert(match)
+    assert match
     filename = match.group(1).replace('\\:', ':')
     return filename
