@@ -54,9 +54,11 @@ def parse_filename(path):
     file = os.path.basename(path)
     if re.search('supplement[a-z]*( material)?(\\))?.pdf', file, re.IGNORECASE):
         return None  # Don't process supplementals
+    if re.search(' - changes.pdf', file, re.IGNORECASE):
+        return None  # Another ignored file
     assert file.endswith(".pdf")
     match = re.search('\\((.*?)( et al.)?\\) (.*).pdf', file)
-    assert match
+    assert match, "Error parsing filename: " + file
     authors = match.group(1).split(', ')
     title = match.group(3)
     return (authors, title)

@@ -41,7 +41,7 @@ def query_crossref_folder(folder, use_backup):
 
     # Create database
     db = utils.read_bib_file(os.path.join(folder, '.queried.bib'))
-    files = utils.create_file_dict(db)
+    files = utils.guess_manual_files(folder, db, update_queried_db=False)
     json_entries = []
     rejected = []
 
@@ -91,7 +91,7 @@ def query_google_folder(folder, use_backup):
 
     # Create database
     db = utils.read_bib_file(os.path.join(folder, '.queried.bib'))
-    files = utils.create_file_dict(db)
+    files = utils.guess_manual_files(folder, db, update_queried_db=False)
 
     for path in sorted(glob.glob(os.path.join(folder, "*.pdf"))):
         file = os.path.basename(path)
@@ -132,35 +132,7 @@ def format_folder(folder, use_backup, context=None):
 
     # Create database
     db = utils.read_bib_file(os.path.join(folder, '.queried.bib'), custom=True)
-
-    # If a '.manual.bib' is present, override corresponding queried entries
-    # The way it works is as follows:
-    # 1) Guess the filename of each entry in `.manual.bib`
-    # 2) Find entry in `.queried.bib` with the closest file name in its 'file' field
-    # 3) Override with manual entry
-    manual_bib_path = os.path.join(folder, '.manual.bib')
-    if os.path.exists(manual_bib_path):
-        manual_database = utils.read_bib_file(manual_bib_path, custom=True)
-        files = utils.create_file_dict(db)
-        for entry in manual_database.entries:
-            guess = nomenclature.gen_filename(entry)
-            file = utils.encode_filename_field(guess)
-            best_score = 0.0
-            best_val = -1
-            # Compare again other file entries
-            for key, val in sorted(files.items()):
-                sc = utils.simratio(key, file)
-                if sc > best_score:
-                    best_score = sc
-                    best_val = val
-            # Update 'file' field
-            match, _ = utils.most_similar_filename(guess, folder)
-            entry['file'] = utils.encode_filename_field(match)
-            # If best match is good enough, override old entry
-            if best_score > 0.95:
-                db.entries[best_val] = entry
-            else:
-                db.entries.append(entry)
+    utils.guess_manual_files(folder, db, update_queried_db=True)
 
     if context is None:
         context = set()
@@ -289,6 +261,8 @@ def merge_folder_tree(folder, use_backup):
     """
     db = BibDatabase()
     for subdir, _dirs, _files in os.walk(os.path.abspath(folder)):
+        if os.path.exists(os.path.join(subdir, '.nobib')):
+            continue  # Skip blacklisted folders
         reldir = os.path.relpath(subdir, os.path.abspath(folder))
         bib_path = os.path.join(subdir, 'biblio.bib')
         subdb = utils.read_bib_file(bib_path)
@@ -315,6 +289,8 @@ def clean_folder_tree(folder):
     """
     res = []
     for subdir, _dirs, files in os.walk(folder):
+        if os.path.exists(os.path.join(subdir, '.nobib')):
+            continue  # Skip blacklisted folders
         files = [f for f in os.listdir(subdir) if re.search('.*\\.bak([0-9]*)?', f)]
         res = res + [os.path.join(subdir, f) for f in files]
     for path in res:
@@ -349,6 +325,8 @@ def format_file(filename, use_backup):
 
 def apply_folder_tree(folder, func, *args):
     for subdir, _dirs, _files in os.walk(folder):
+        if os.path.exists(os.path.join(subdir, '.nobib')):
+            continue  # Skip blacklisted folders
         if utils.has_pdfs(subdir):
             print(termcolor.colored('Entering: ' + subdir, "cyan", attrs=["bold"]))
             func(subdir, *args)

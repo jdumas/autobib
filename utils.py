@@ -189,6 +189,48 @@ def create_file_dict(db):
     return files
 
 
+def guess_manual_files(folder, queried_db, update_queried_db=True):
+    """
+    Tries to guess which files in a folder correspond to entries placed in the
+    `.manual.bib` file. This is useful for e.g. to avoid performing online queries
+    for files which we know have a manual entry.
+
+    If a '.manual.bib' is present, override corresponding queried entries
+    The way it works is as follows:
+      1. Guess the filename of each entry in `.manual.bib`
+      2. Find entry in `.queried.bib` with the closest file name in its 'file' field
+      3. Override with manual entry
+    """
+    files = create_file_dict(queried_db)
+    manual_bib_path = os.path.join(folder, '.manual.bib')
+    if os.path.exists(manual_bib_path):
+        manual_database = read_bib_file(manual_bib_path, custom=True)
+        for entry in manual_database.entries:
+            guess = nomenclature.gen_filename(entry)
+            file = encode_filename_field(guess)
+            best_score = 0.0
+            best_idx = -1
+            # Compare again other file entries
+            for key, idx in sorted(files.items()):
+                sc = simratio(key, file)
+                if sc > best_score:
+                    best_score = sc
+                    best_idx = idx
+            # Update 'file' field
+            match, _ = most_similar_filename(guess, folder)
+            entry['file'] = encode_filename_field(match)
+            # If best match is good enough, override old entry
+            if update_queried_db:
+                if best_score > 0.95:
+                    queried_db.entries[best_idx] = entry
+                else:
+                    queried_db.entries.append(entry)
+            else:
+                print(match)
+                files[match] = -1
+    return files
+
+
 def read_bib_file(filename, custom=False):
     """
     Read bibtex file.
