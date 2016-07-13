@@ -42,6 +42,7 @@ def query_crossref_folder(folder, use_backup):
     # Create database
     db = utils.read_bib_file(os.path.join(folder, '.queried.bib'))
     files = utils.guess_manual_files(folder, db, update_queried_db=False)
+    utils.add_skip_files(folder, files)
     json_entries = []
     rejected = []
 
@@ -92,6 +93,7 @@ def query_google_folder(folder, use_backup):
     # Create database
     db = utils.read_bib_file(os.path.join(folder, '.queried.bib'))
     files = utils.guess_manual_files(folder, db, update_queried_db=False)
+    utils.add_skip_files(folder, files)
 
     for path in sorted(glob.glob(os.path.join(folder, "*.pdf"))):
         file = os.path.basename(path)

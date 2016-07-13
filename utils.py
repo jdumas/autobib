@@ -230,6 +230,17 @@ def guess_manual_files(folder, queried_db, update_queried_db=True):
     return files
 
 
+def add_skip_files(folder, files):
+    """
+    Read the file `.skip.txt` if it exists, and skip the files it contains from online queries.
+    """
+    skip_path = os.path.join(folder, '.skip.txt')
+    if os.path.isfile(skip_path):
+        with open(skip_path, 'r') as f:
+            for x in f.read().splitlines():
+                files[x] = -1
+
+
 def read_bib_file(filename, custom=False):
     """
     Read bibtex file.
