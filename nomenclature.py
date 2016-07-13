@@ -84,6 +84,7 @@ def gen_filename(record):
         name = re.sub("\\\\'ı", "i", name)
         name = re.sub("\\\\`ı", "i", name)
         name = re.sub("ı", "i", name)
+        name = re.sub('\xf8', 'o', name)
         last_names.append(name)
 
     # If there are more than 4 authors, use the 'et al.' form
