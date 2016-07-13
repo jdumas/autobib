@@ -226,7 +226,6 @@ def guess_manual_files(folder, queried_db, update_queried_db=True):
                 else:
                     queried_db.entries.append(entry)
             else:
-                print(match)
                 files[match] = -1
     return files
 
