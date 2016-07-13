@@ -101,14 +101,17 @@ There is several aspects of `autobib.py` which can be customized. The 2 files th
 FAQ
 ---
 
-**Q1: The program crashed when parsing the filename of my paper?**
-: Are you sure your file is named according to the format `(%authors) %title.pdf`? Right now this is the only supported naming scheme, but this will be improved in the future. Please see the [customization](#customization) section for more information.
+##### Q1: The program crashed when parsing the filename of my paper?
 
-**Q2: Can I skip a sub-folder that I do not want to be processed?**
-: Yes! Simply put an empty file named `.nobib` in this folder! There could be other options in the future, but for now this should be sufficient.
+> Are you sure your file is named according to the format `(%authors) %title.pdf`? Right now this is the only supported naming scheme, but this will be improved in the future. Please see the [customization](#customization) section for more information.
 
-**Q3: There are some weird characters in my results?**
-: Ah, this is probably the result of some encoding madness. Right now there are some hardcoded character substitutions written here and there in the code. This will be improved in the future, but right now all I can do it add more quick fix that works for you.
+##### Q2: Can I skip a sub-folder that I do not want to be processed?
+
+> Yes! Simply put an empty file named `.nobib` in this folder! There could be other options in the future, but for now this should be sufficient.
+
+##### Q3: There are some weird characters in my results?
+
+> Ah, this is probably the result of some encoding madness. Right now there are some hardcoded character substitutions written here and there in the code. This will be improved in the future, but right now all I can do it add more quick fix that works for you.
 
 
 Disclaimer
