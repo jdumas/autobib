@@ -14,6 +14,7 @@ from habanero import Crossref, cn
 # Local libs
 import utils
 import nomenclature
+import fix_scholarly
 
 
 def print_score(sc):
