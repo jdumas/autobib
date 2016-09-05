@@ -189,6 +189,7 @@ def homogenize_latex_encoding(record):
             record[val] = record[val].replace('\n', ' ').replace('\r', '')
             record[val] = re.sub('\\\\textdollar \\\\textbackslash mathplus\\\\textdollar ', '+', record[val])
             record[val] = re.sub('\\$\\\\mathplus\\$', '+', record[val])
+            record[val] = re.sub('\{́i\}', 'í', record[val])
             if val == 'title':
                 record[val] = re.sub('GCMMA-two', 'GCMMA - two', record[val])
                 record[val] = re.sub('ShapeOp—A', 'ShapeOp — A', record[val])
