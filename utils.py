@@ -146,7 +146,7 @@ def write_with_backup(filename, new_content, use_backup=True):
                 shutil.move(filename, backup)
 
     # Write new content
-    with open(filename, 'w') as file:
+    with open(filename, 'w',encoding='UTF8') as file:
         file.write(new_content)
 
 
@@ -256,7 +256,7 @@ def read_bib_file(filename, custom=False):
     # Read input bibtex file
     bibtex_str = ""
     if os.path.exists(filename):
-        with open(filename, 'r') as bibfile:
+        with open(filename, 'r',encoding='UTF8') as bibfile:
             bibtex_str = bibfile.read()
 
     # Choose parser
