@@ -10,5 +10,7 @@
 - [ ] Add functions to rename between different naming conventions
 - [ ] Add a function to update the bibkeys in a .tex project (update the .bib as well as all the citations the .tex files of the project).
 
+- [ ] With option -f, dump a remap.sh script that subst all the old keys with the new ones (only if the script didn't exist before). Useful when you have a latex project with dirty keys!!!
+
 # Options
 - [ ] -e: --eval bib (show diff dist between filenames and bib entry)

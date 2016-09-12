@@ -98,6 +98,14 @@ There is several aspects of `autobib.py` which can be customized. The 2 files th
 * This file defines capitalization and pattern substitution rules. You can complete the lists of `uppercase_words` and `lowercase_words`. For now pattern substitutions are hardcorded, but this will change in the future.
 
 
+Unicode Madness
+---------------
+
+Right now the whole situation is a little bit messy. Problematic characters are replaced using hardcoded substitutions everywhere. The current rule is to use UTF-8 encoding to write and read every file, even on Windows. So please make sure you do not have any weird accent written in a file that uses an exotic encoding, or it might create troubles.
+
+Storing non-ASCII characters as their latex equivalent code is the best option for maximum compatibility, but I would also like to keep the possibility of using unicode characters, which pose no problem with modern alternatives such as `biblatex` and `biber`. Eventually I should provide an option for both strategies. But this will come later when I have the time to implement it correctly.
+
+
 FAQ
 ---
 
@@ -112,6 +120,10 @@ FAQ
 ##### Q3: There are some weird characters in my results?
 
 > Ah, this is probably the result of some encoding madness. Right now there are some hardcoded character substitutions written here and there in the code. This will be improved in the future, but right now all I can do it add more quick fix that works for you.
+
+##### Q4: I have trouble with unicode characters on my Windows terminal.
+
+> Try setting your environment variable `PYTHONIOENCODING` to `UTF-8`. More information on the subject can be found [here](http://stackoverflow.com/questions/507123/python-3-0-how-to-make-print-output-unicode) and [here](http://stackoverflow.com/questions/25127673/how-to-print-utf-8-to-console-with-python-3-4-windows-8).
 
 
 Disclaimer

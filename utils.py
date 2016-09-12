@@ -137,7 +137,7 @@ def write_with_backup(filename, new_content, use_backup=True):
                 backup = filename + '.bak.' + str(index)
                 index += 1
         if os.path.exists(filename):
-            if new_content == open(filename).read():
+            if new_content == open(filename, encoding='utf-8').read():
                 # If file to write is similar to the file to overwrite, do nothing
                 return
             else:
@@ -146,7 +146,7 @@ def write_with_backup(filename, new_content, use_backup=True):
                 shutil.move(filename, backup)
 
     # Write new content
-    with open(filename, 'w') as file:
+    with open(filename, 'w', encoding='utf-8') as file:
         file.write(new_content)
 
 
@@ -236,7 +236,7 @@ def add_skip_files(folder, files):
     """
     skip_path = os.path.join(folder, '.skip.txt')
     if os.path.isfile(skip_path):
-        with open(skip_path, 'r') as f:
+        with open(skip_path, 'r', encoding='utf-8') as f:
             for x in f.read().splitlines():
                 files[x] = -1
 
@@ -256,7 +256,7 @@ def read_bib_file(filename, custom=False):
     # Read input bibtex file
     bibtex_str = ""
     if os.path.exists(filename):
-        with open(filename, 'r') as bibfile:
+        with open(filename, 'r', encoding='utf-8') as bibfile:
             bibtex_str = bibfile.read()
 
     # Choose parser

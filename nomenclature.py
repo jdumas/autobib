@@ -58,9 +58,14 @@ def parse_filename(path):
         return None  # Another ignored file
     assert file.endswith(".pdf")
     match = re.search('\\((.*?)( et al.)?\\) (.*).pdf', file)
-    assert match, "Error parsing filename: " + file
-    authors = match.group(1).split(', ')
-    title = match.group(3)
+    if not match:
+        match = re.search('(.*).pdf', file)
+        assert match, "Error parsing filename: " + file
+        authors = ""
+        title = match.group(1)
+    else:
+        authors = match.group(1).split(', ')
+        title = match.group(3)
     return (authors, title)
 
 
@@ -107,6 +112,8 @@ def gen_filename(record):
     title = re.sub('\\\\textquotesingle ', "'", title)
     title = to_titlecase(title)
     title = re.sub('"', '', title)
+    title = re.sub('\u2010', '-', title)
+    title = re.sub('\u2122', '', title)
 
     return prefix + title + '.pdf'
 
