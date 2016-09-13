@@ -147,6 +147,9 @@ def crossref_query(authors, title):
                     month_str = utils.MONTHS[month - 1]
                     res_bib['month'] = month_str
 
+    # Fix potential ambiguous author entries
+    utils.fix_author_field(res_bib, res_json)
+
     print('C: ' + nomenclature.gen_filename(res_bib))
     print_score(score)
 

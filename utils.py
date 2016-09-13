@@ -12,6 +12,7 @@ import difflib
 import unicodedata
 
 # Third party libs
+import termcolor
 import bibtexparser
 from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bparser import BibTexParser
@@ -324,3 +325,45 @@ def decode_filename_field(text):
     assert match
     filename = match.group(1).replace('\\:', ':')
     return filename
+
+
+def fix_author_field(res_bib, res_json):
+    """
+    Attempt to fix some defects when the author name is given in an ambiguous
+    manner in the bibtex entry. To this end, it uses the matching json entry.
+    Works only for Crossref.
+    """
+
+    def process_pair(author_bib, author_json):
+        if ',' in author_bib:
+            # Assume entry is correct already
+            return author_bib
+        elif sorted(author_json.keys()) != ['affiliation', 'family', 'given']:
+            # Author entry contains extra information
+            print(termcolor.colored('W: Too much info in author json entry:', 'yellow'))
+            print("JSON: " + str(author_json))
+            return author_bib
+        elif not author_bib.endswith(author_json['family']):
+            # Mismatched family name between json and bibtex
+            print(termcolor.colored('W: Potential mismatched family name in author entry:', 'yellow'))
+            print("BIB : " + author_bib)
+            print("JSON: " + str(author_json))
+            return author_bib
+        else:
+            # All good, let's remove the ambiguity
+            old_name = author_json['given'] + ' ' + author_json['family']
+            new_name = author_json['family'] + ", " + author_json['given']
+            if old_name != author_bib or len(author_json['family'].split()) > 1:
+                msg = "I: Author name changed from [" + author_bib + "] to [" + new_name + "]"
+                print(termcolor.colored(msg, 'yellow'))
+            return new_name
+
+    author_list = res_bib['author'].split(' and ')
+    author_list = [process_pair(a, b) for a, b in zip(author_list, res_json['author'])]
+    res_bib['author'] = ' and '.join(author_list)
+
+
+if __name__ == "__main__":
+    s = 'Tim Van Hook'
+    t = [{'family': 'Van Hook', 'given': 'Tim', 'affiliation': [], 'yay':1}]
+    fix_author_field({'author': s}, {'author': t})
