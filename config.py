@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-User-defined replacement rules for autoformatting bibtex entries and filenames.
+User-defined replacement rules for auto-formatting bibtex entries and filenames.
 """
 
 # Words to keep all uppercase when converting to titlecase
@@ -15,3 +15,6 @@ uppercase_words = [
 # Words to keep all lowercase when converting to titlecase
 lowercase_words = [
 ]
+
+# Crossref acceptance threshold
+crossref_accept_threshold = 2.8

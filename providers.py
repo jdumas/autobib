@@ -12,6 +12,7 @@ import scholarly
 from habanero import Crossref, cn
 
 # Local libs
+import config
 import utils
 import nomenclature
 import fix_scholarly
@@ -148,10 +149,14 @@ def crossref_query(authors, title):
                     res_bib['month'] = month_str
 
     # Fix potential ambiguous author entries
-    utils.fix_author_field(res_bib, res_json)
+    msg = utils.fix_author_field(res_bib, res_json)
 
     print('C: ' + nomenclature.gen_filename(res_bib))
     print_score(score)
+
+    # If score is above threshold, display msg from fix_author_field
+    if score >= config.crossref_accept_threshold and msg:
+        print(msg)
 
     # Return database entry
     return (res_bib, res_json, score)

@@ -14,6 +14,7 @@ import termcolor
 from bibtexparser.bibdatabase import BibDatabase
 
 # Local libs
+import config
 import utils
 import nomenclature
 import providers
@@ -57,7 +58,7 @@ def query_crossref_folder(folder, use_backup):
 
         # Crossref
         rbib, rjson, score = providers.crossref_query(authors, title)
-        if score >= 2.8:
+        if score >= config.crossref_accept_threshold:
             # Append filename and store entry
             rbib['file'] = utils.encode_filename_field(file)
             json_entries.append(rjson)
