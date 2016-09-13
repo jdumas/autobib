@@ -115,7 +115,7 @@ FAQ
 
 ##### Q2: Can I skip a sub-folder that I do not want to be processed?
 
-> Yes! Simply put an empty file named `.nobib` in this folder! There could be other options in the future, but for now this should be sufficient.
+> Sure! Simply put an empty file named `.nobib` in this folder. There could be other options in the future, but for now this should be sufficient.
 
 ##### Q3: There are some weird characters in my results?
 
