@@ -12,5 +12,9 @@
 
 - [ ] With option -f, dump a remap.sh script that subst all the old keys with the new ones (only if the script didn't exist before). Useful when you have a latex project with dirty keys!!!
 
+- [ ] Add option to remove duplicated keys instead of generating unique names. Useful when reformating a dirty .bib file, but also to detect potential duplicates in your folder tree.
+
+- [ ] Add option to add consistency to author names. Creates and use a 'authors_remap' text file at the given location, that can be maintained for global consistency!
+
 # Options
 - [ ] -e: --eval bib (show diff dist between filenames and bib entry)
