@@ -93,6 +93,7 @@ def gen_filename(record):
         name = re.sub("ı", "i", name)
         name = re.sub('\xf8', 'o', name)
         name = re.sub('\\\\textquotesingle ', "'", name)
+        name = name.replace('ł', 'l')
         last_names.append(name)
 
     # If there are more than 4 authors, use the 'et al.' form
@@ -117,6 +118,7 @@ def gen_filename(record):
     title = re.sub('’', "'", title)
     title = re.sub('\u2010', '-', title)
     title = re.sub('\u2122', '', title)
+    title = title.replace('$\Tt FreeFem++$', 'FreeFem++')
 
     return prefix + title + '.pdf'
 
