@@ -33,7 +33,7 @@ def to_titlecase(text):
             return word.upper()
         if word.lower() in config.lowercase_words:
             return word.lower()
-        if word.startswith('\\'):
+        if word and word[0] in ['\\', '$']:
             return word
     return titlecase.titlecase(text, callback=abbreviations)
 
@@ -118,7 +118,7 @@ def gen_filename(record):
     title = re.sub('’', "'", title)
     title = re.sub('\u2010', '-', title)
     title = re.sub('\u2122', '', title)
-    title = title.replace('$\Tt FreeFem++$', 'FreeFem++')
+    title = title.replace('$\\tt FreeFem++$', 'FreeFem++')
 
     return prefix + title + '.pdf'
 
@@ -148,6 +148,7 @@ def gen_bibkey(record, all_keys):
     stripped = utils.strip_accents(codecs.decode(first_author, "ulatex"))
     last_name = stripped.split(',')[0]
     last_name = last_name.replace('ø', 'o')
+    last_name = last_name.replace('ł', 'l')
     last_name = re.sub('([^a-zA-Z])', '', last_name)
 
     # Then get the first 3 initials of the article title

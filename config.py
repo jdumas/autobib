@@ -14,6 +14,7 @@ uppercase_words = [
 
 # Words to keep all lowercase when converting to titlecase
 lowercase_words = [
+    '$\\Tt'
 ]
 
 # Crossref acceptance threshold
