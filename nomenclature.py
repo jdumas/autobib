@@ -33,6 +33,9 @@ def to_titlecase(text):
             return word.upper()
         if word.lower() in config.lowercase_words:
             return word.lower()
+        for s in config.mixedcase_words:
+            if word.lower() == s.lower():
+                return s
         if word and word[0] in ['\\', '$']:
             return word
     return titlecase.titlecase(text, callback=abbreviations)

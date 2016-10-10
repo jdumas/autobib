@@ -17,5 +17,10 @@ lowercase_words = [
     '$\\Tt'
 ]
 
+# Words to keep as is
+mixedcase_words = [
+    'FreeFem++'
+]
+
 # Crossref acceptance threshold
 crossref_accept_threshold = 2.8
