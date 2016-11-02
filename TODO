@@ -18,5 +18,8 @@ Features:
 
 	☐	Replace unicode ’
 
+	☐	--extract: extract list of pdf from existing .bib @critical
+	☐	--update-project-keys: take 2 .bib file and 1 folder, and update keys in all .tex @critical
+
 Options:
-	☐	-e: --eval bib (show diff dist between filenames and bib entry)
+	☐	-e: --eval bib (show diff dist between filenames and bib entry) ?
