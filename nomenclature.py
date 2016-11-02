@@ -122,6 +122,7 @@ def gen_filename(record):
     title = re.sub('\u2010', '-', title)
     title = re.sub('\u2122', '', title)
     title = title.replace('$\\texttt FreeFem++$', 'FreeFem++')
+    title = title.replace('$\\lambda _\\Infty $ ', 'λ∞')
 
     return prefix + title + '.pdf'
 
@@ -210,5 +211,6 @@ def homogenize_latex_encoding(record):
                 record[val] = re.sub('GCMMA-two', 'GCMMA - two', record[val])
                 record[val] = re.sub('ShapeOp—A', 'ShapeOp — A', record[val])
                 record[val] = record[val].replace('\\tt{', '\\texttt{')
+                record[val] = record[val].replace('훜fty', '\\infty')
                 record[val] = to_titlecase(record[val])
     return record
