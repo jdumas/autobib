@@ -31,7 +31,7 @@ def uni2tex(text):
 
         # combining marks
         if unicodedata.category(char) in ("Mn", "Mc") and code in accents:
-            out += "{\\%s%s}" % (accents[code], txt[i + 1])
+            out += "{\\%s %s}" % (accents[code], txt[i + 1])
             i += 1
         # precomposed characters
         elif unicodedata.decomposition(char):
@@ -39,7 +39,7 @@ def uni2tex(text):
             acc = int(acc, 16)
             base = int(base, 16)
             if acc in accents:
-                out += "{\\%s%s}" % (accents[acc], chr(base))
+                out += "{\\%s %s}" % (accents[acc], chr(base))
             else:
                 out += char
         # other special case
