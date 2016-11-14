@@ -420,6 +420,8 @@ def parse_args():
                         help="create a script to remap bibtex entries from one .bib to another")
     parser.add_argument('-t', '--tol', default=2.8,
                         help="set crossref tolerance")
+    parser.add_argument('-u', '--utf8', default=True,
+                        help="write utf8 characters in output .bib")
     return parser.parse_args()
 
 
@@ -430,8 +432,9 @@ if __name__ == "__main__":
         input_path = "."
         if args.filename:
             input_path = args.filename
-        # Set crossref tolerance
+        # Set config from command line
         config.crossref_accept_threshold = float(args.tol)
+        config.use_utf8_characters = bool(args.utf8)
         # If input path is a bib file
         if input_path.endswith('.bib'):
             assert os.path.isfile(input_path)
