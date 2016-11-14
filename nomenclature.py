@@ -203,6 +203,9 @@ def homogenize_latex_encoding(record):
     for val in record:
         if val not in ('ID', 'file'):
             # record[val] = bibtexparser.latexenc.string_to_latex(record[val])
+            if '{' in record[val]:
+                record[val] = latex.remove_nested_braces(record[val])
+                print(record[val])
             record[val] = re.sub('\\\\?&', '\\&', record[val])
             record[val] = record[val].replace('\\i', 'i')
             record[val] = record[val].replace('\n', ' ').replace('\r', '')

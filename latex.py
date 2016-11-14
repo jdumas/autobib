@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import re
 import unicodedata
 
 accents = {
@@ -31,7 +32,7 @@ def uni2tex(text):
 
         # combining marks
         if unicodedata.category(char) in ("Mn", "Mc") and code in accents:
-            out += "{\\%s %s}" % (accents[code], txt[i + 1])
+            out += "{\\%s{%s}}" % (accents[code], txt[i + 1])
             i += 1
         # precomposed characters
         elif unicodedata.decomposition(char):
@@ -39,7 +40,7 @@ def uni2tex(text):
             acc = int(acc, 16)
             base = int(base, 16)
             if acc in accents:
-                out += "{\\%s %s}" % (accents[acc], chr(base))
+                out += "{\\%s{%s}}" % (accents[acc], chr(base))
             else:
                 out += char
         # other special case
@@ -53,5 +54,20 @@ def uni2tex(text):
     return out
 
 
+def remove_nested_braces(s):
+    """
+    Remove some cases of nested braces such as 'a{{b}}c' -> 'a{b}c'.
+    """
+    for __ in range(10):
+        x = re.sub('{{([^{}]*)}}', '{\\1}', s)
+        if len(x) >= len(s):
+            break
+        else:
+            s = x
+    s = re.sub('{([^{}])}', '\\1', s)
+    s = re.sub('{([a-zA-Z]*)}', '\\1', s)
+    return s
+
+
 if __name__ == '__main__':
-    print(uni2tex("Klüft skräms inför på fédéral électoral große"))
+    print(uni2tex("Klüft skräms çinför på fédéral électoral große"))
