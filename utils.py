@@ -49,7 +49,8 @@ def strip_accents(s):
 
 
 def has_pdfs(folder):
-    return len(glob.glob(os.path.join(folder, "*.pdf"))) > 0
+    return (os.path.exists(os.path.join(folder, '.biblist')) or
+            len(glob.glob(os.path.join(folder, "*.pdf"))) > 0)
 
 
 def simratio(file1, file2):
@@ -88,6 +89,21 @@ def most_similar_filename(guess, candidates):
             best_score = sc
             best_file = file
     return best_file, best_score
+
+
+def get_pdf_list(folder):
+    """
+    Return the list of pdfs in a given folder.
+    Additionally, if the folder contains a file named ".biblist", reads
+    the content of the file as additional pdfs to process.
+    """
+    all_pdfs = list(glob.glob(os.path.join(folder, "*.pdf")))
+    biblist_file = os.path.join(folder, '.biblist')
+    if os.path.exists(biblist_file):
+        with open(biblist_file, 'r') as f:
+            for l in f:
+                all_pdfs.append(l.rstrip())
+    return sorted(all_pdfs)
 
 
 def multireplace(string, replacements):

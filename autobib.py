@@ -48,7 +48,7 @@ def query_crossref_folder(folder, use_backup):
     rejected = []
 
     # For each pdf in the folder
-    for path in sorted(glob.glob(os.path.join(folder, "*.pdf"))):
+    for path in utils.get_pdf_list(folder):
         file = os.path.basename(path)
         parsed = nomenclature.parse_filename(file)
         if parsed is None or file in files:
@@ -96,7 +96,7 @@ def query_google_folder(folder, use_backup):
     files = utils.guess_manual_files(folder, db, update_queried_db=False)
     utils.add_skip_files(folder, files)
 
-    for path in sorted(glob.glob(os.path.join(folder, "*.pdf"))):
+    for path in utils.get_pdf_list(folder):
         file = os.path.basename(path)
         parsed = nomenclature.parse_filename(file)
         if parsed is None or file in files:
@@ -224,7 +224,7 @@ def sync_folder(folder, use_backup):
     for bib_file in ('.queried.bib', 'biblio.bib'):
         bib_path = os.path.join(folder, bib_file)
         db = utils.read_bib_file(bib_path)
-        unmatched = set([os.path.basename(f) for f in glob.glob(os.path.join(folder, "*.pdf"))])
+        unmatched = set([os.path.basename(f) for f in utils.get_pdf_list(folder)])
         to_delete = []
         for i, entry in enumerate(db.entries):
             guess = nomenclature.gen_filename(entry)
