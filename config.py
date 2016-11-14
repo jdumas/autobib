@@ -23,4 +23,7 @@ mixedcase_words = [
 ]
 
 # Crossref acceptance threshold
-crossref_accept_threshold = 2.8
+crossref_accept_threshold = 2.3
+
+# Whether to write accented characters (True), or their latex equivalent (False)
+use_utf8_characters = True

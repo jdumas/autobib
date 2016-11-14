@@ -11,10 +11,12 @@ import codecs
 import titlecase
 import latexcodec
 import bibtexparser
+from bibtexparser.latexenc import unicode_to_latex
 
 # Local libs
 import config
 import utils
+import latex
 
 
 def to_titlecase(text):
@@ -213,4 +215,20 @@ def homogenize_latex_encoding(record):
                 record[val] = record[val].replace('\\tt{', '\\texttt{')
                 record[val] = record[val].replace('훜fty', '\\infty')
                 record[val] = to_titlecase(record[val])
+    return record
+
+
+def encode_ascii_latex(record):
+    """
+    Translate all non-ascii unicode characters in an entry to their equivalent
+    latex macro.
+    """
+    def isascii(s):
+        return len(s) == len(s.encode())
+    for val in record:
+        if not isascii(record[val]):
+            record[val] = latex.uni2tex(record[val])
+            # for k, v in unicode_to_latex:
+            #    if k in record[val]:
+            #        record[val] = record[val].replace(k, v)
     return record

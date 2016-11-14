@@ -134,7 +134,7 @@ def format_folder(folder, use_backup, context=None):
     """
 
     # Create database
-    db = utils.read_bib_file(os.path.join(folder, '.queried.bib'), custom=True)
+    db = utils.read_bib_file(os.path.join(folder, '.queried.bib'), homogenize=True)
     utils.guess_manual_files(folder, db, update_queried_db=True)
 
     if context is None:
@@ -318,12 +318,68 @@ def format_file(filename, use_backup):
     Returns:
         Nothing, but update the given file.
     """
-    db = utils.read_bib_file(filename, custom=True)
+    db = utils.read_bib_file(filename, homogenize=True)
     # Generate bibkeys
     context = set()
+    subst = {}
     for entry in db.entries:
-        entry['ID'] = nomenclature.gen_bibkey(entry, context)
+        old_key = entry['ID']
+        new_key = nomenclature.gen_bibkey(entry, context)
+        entry['ID'] = new_key
+        if old_key != new_key:
+            subst[old_key] = new_key
     utils.write_with_backup(filename, utils.write_bib(db, order=True), use_backup)
+    utils.write_remap_script(subst, os.path.dirname(filename))
+
+
+def extract_from_file(filename, output_folder):
+    """
+    Extract citation from a given .bib file, and write the resulting list in a
+    '.biblist' in the given folder.
+    """
+    db = utils.read_bib_file(filename, homogenize=False)
+    outfile = os.path.join(output_folder, ".biblist")
+    if os.path.exists(outfile):
+        cmd = input("overwrite existing file '{0}' (y/N) ".format(outfile))
+        if cmd != 'y':
+            return
+    filenames = sorted([nomenclature.gen_filename(entry) for entry in db.entries])
+    with open(outfile, 'w') as f:
+        for name in filenames:
+            f.write(name)
+            f.write('\n')
+
+
+def remap_keys(old_filename, new_filename, output_folder):
+    """
+    Create a script to remap bibtex keys from one .bib file to another.
+
+    This function uses the edit distance on filenames generated from a bitex entry
+    to compare entries together, and greedily matches old entries to new entries.
+    """
+    old_db = utils.read_bib_file(old_filename, homogenize=False)
+    new_db = utils.read_bib_file(new_filename, homogenize=False)
+    old_list = {}
+    new_list = {}
+    subst = {}
+    for entry in new_db.entries:
+        name = nomenclature.gen_filename(entry)
+        new_list[name] = entry['ID']
+    for entry in old_db.entries:
+        name = nomenclature.gen_filename(entry)
+        if name in new_list.keys():
+            subst[entry['ID']] = new_list[name]
+            del new_list[name]
+        else:
+            old_list[name] = entry['ID']
+    for name, bibkey in new_list.items():
+        match, score = utils.most_similar_filename(name, old_list.keys())
+        if score < 0.90:
+            print(termcolor.colored("Warning: potentially incorrect substitution:", 'yellow', attrs=["bold"]))
+            print(termcolor.colored('-', 'red') + match)
+            print(termcolor.colored('+', 'green') + name)
+        subst[old_list[match]] = bibkey
+    utils.write_remap_script(subst, output_folder)
 
 
 def apply_folder_tree(folder, func, *args):
@@ -340,6 +396,8 @@ def parse_args():
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('filename', nargs='?', help="input file/folder")
+    parser.add_argument('extra', nargs='?', default='.',
+                        help="extra argument (if applicable)")
     parser.add_argument('-b', '--backup', default=False, action='store_true',
                         help="backup files upon writing")
     parser.add_argument('-c', '--crossref', default=False, action='store_true',
@@ -356,6 +414,12 @@ def parse_args():
                         help="merge bib files in subfolders into a master bib file")
     parser.add_argument('-d', '--delete', default=False, action='store_true',
                         help="delete backuped files")
+    parser.add_argument('-e', '--extract', default=False, action='store_true',
+                        help="extract pdfs names from bibtex")
+    parser.add_argument('-k', '--compare', default="",
+                        help="create a script to remap bibtex entries from one .bib to another")
+    parser.add_argument('-t', '--tol', default=2.8,
+                        help="set crossref tolerance")
     return parser.parse_args()
 
 
@@ -366,12 +430,20 @@ if __name__ == "__main__":
         input_path = "."
         if args.filename:
             input_path = args.filename
+        # Set crossref tolerance
+        config.crossref_accept_threshold = float(args.tol)
         # If input path is a bib file
         if input_path.endswith('.bib'):
             assert os.path.isfile(input_path)
             # Format biblio
             if args.format:
                 format_file(input_path, args.backup)
+            # Extract pdf list from bibtex
+            if args.extract:
+                extract_from_file(input_path, args.extra)
+            # Remap bibtex entries
+            if args.compare.endswith('.bib'):
+                remap_keys(args.compare, input_path, args.extra)
         else:
             assert os.path.isdir(input_path)
             # Crossref query

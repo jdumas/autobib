@@ -19,6 +19,7 @@ from bibtexparser.bparser import BibTexParser
 
 # Local libs
 import nomenclature
+import config
 
 
 if sys.version_info.major == 2:
@@ -82,7 +83,7 @@ def most_similar_filename(guess, candidates):
     best_score = 0.0
     best_file = ""
     if isinstance(candidates, str):
-        candidates = os.listdir(candidates)
+        candidates = get_pdf_list(candidates)
     for file in candidates:
         sc = simratio(guess, file)
         if sc > best_score:
@@ -221,7 +222,7 @@ def guess_manual_files(folder, queried_db, update_queried_db=True):
     files = create_file_dict(queried_db)
     manual_bib_path = os.path.join(folder, '.manual.bib')
     if os.path.exists(manual_bib_path):
-        manual_database = read_bib_file(manual_bib_path, custom=True)
+        manual_database = read_bib_file(manual_bib_path, homogenize=True)
         for entry in manual_database.entries:
             guess = nomenclature.gen_filename(entry)
             file = encode_filename_field(guess)
@@ -258,13 +259,13 @@ def add_skip_files(folder, files):
                 files[x] = -1
 
 
-def read_bib_file(filename, custom=False):
+def read_bib_file(filename, homogenize=False):
     """
     Read bibtex file.
 
     Args:
         filename (str): path of the bibtex file.
-        custom (bool): whether to homogenize the entries upon reading.
+        homogenize (bool): whether to homogenize the entries upon reading.
 
     Returns:
         A BibDatabase object.
@@ -278,7 +279,7 @@ def read_bib_file(filename, custom=False):
 
     # Choose parser
     parser = None
-    if custom:
+    if homogenize:
         parser = BibTexParser()
         parser.customization = nomenclature.homogenize_latex_encoding
 
@@ -307,6 +308,9 @@ def write_bib(db, order=False):
         # Manual sort
         order_entries_by = ('year', 'author', 'ID')
         sort_entries(db, order_entries_by)
+
+    if not config.use_utf8_characters:
+        db.entries = [nomenclature.encode_ascii_latex(entry) for entry in db.entries]
 
     # Write bib string
     return writer.write(db)
@@ -378,6 +382,27 @@ def fix_author_field(res_bib, res_json):
     author_list = res_bib['author'].split(' and ')
     author_list = [process_pair(a, b, msg) for a, b in zip(author_list, res_json['author'])]
     res_bib['author'] = ' and '.join(author_list)
+
+
+def write_remap_script(subst, output_folder):
+    """
+    Write a bash script to replace old bibtex keys by new ones.
+    """
+    subst = {k: v for k, v in subst.items() if k != v}
+    if len(subst) == 0:
+        return
+    s = """find . -name "*.tex" -exec sed -i 's/{0}/{1}/g' {{}} \\;"""
+    outfile = os.path.join(output_folder, "remap.sh")
+    if os.path.exists(outfile):
+        cmd = input("overwrite existing file '{0}' (y/N) ".format(outfile))
+        if cmd != 'y':
+            return
+    with open(outfile, 'w') as f:
+        f.write("#! /bin/bash\n\n")
+        for k, v in subst.items():
+            if v.startswith(k):
+                f.write(s.format(v, k) + '\n')
+            f.write(s.format(k, v) + '\n')
 
 
 if __name__ == "__main__":

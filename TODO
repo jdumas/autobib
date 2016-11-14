@@ -8,9 +8,9 @@ Features:
 	☐	Check year against google scholar.
 	☐	Add a mode to enable/disable utf8 in resulting .bib
 	☐	Add functions to rename between different naming conventions
-	☐	Add a function to update the bibkeys in a .tex project (update the .bib as well as all the citations the .tex files of the project).
+	✔	Add a function to update the bibkeys in a .tex project (update the .bib as well as all the citations the .tex files of the project). @done (14-11-16 13:57)
 
-	☐	With option -f, dump a remap.sh script that subst all the old keys with the new ones (only if the script didn't exist before). Useful when you have a latex project with dirty keys!!!
+	✔	With option -f, dump a remap.sh script that subst all the old keys with the new ones (only if the script didn't exist before). Useful when you have a latex project with dirty keys!!! @done (14-11-16 13:57)
 
 	☐	Add option to remove duplicated keys instead of generating unique names. Useful when reformating a dirty .bib file, but also to detect potential duplicates in your folder tree.
 
@@ -18,8 +18,8 @@ Features:
 
 	☐	Replace unicode ’
 
-	☐	--extract: extract list of pdf from existing .bib @critical
-	☐	--update-project-keys: take 2 .bib file and 1 folder, and update keys in all .tex @critical
+	✔	--extract: extract list of pdf from existing .bib @critical @done (14-11-16 13:56)
+	✔	--update-project-keys: take 2 .bib file and 1 folder, and update keys in all .tex @critical @done (14-11-16 13:57)
 
 Options:
 	☐	-e: --eval bib (show diff dist between filenames and bib entry) ?
