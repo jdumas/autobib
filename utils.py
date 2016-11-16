@@ -304,6 +304,11 @@ def write_bib(db, order=False):
     writer.indent = '\t'
     writer.order_entries_by = None
 
+    # Replace month by numeric value
+    for entry in db.entries:
+        if 'month' in entry and entry['month'] in MONTHS:
+            entry['month'] = '{:02d}'.format(MONTHS.index(entry['month']) + 1)
+
     if order:
         # Manual sort
         order_entries_by = ('year', 'author', 'ID')
