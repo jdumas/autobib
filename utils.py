@@ -18,6 +18,7 @@ from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bparser import BibTexParser
 
 # Local libs
+import latex
 import nomenclature
 import config
 
@@ -316,6 +317,10 @@ def write_bib(db, order=False):
 
     if not config.use_utf8_characters:
         db.entries = [nomenclature.encode_ascii_latex(entry) for entry in db.entries]
+
+    if config.protect_uppercase:
+        for entry in db.entries:
+            entry["title"] = latex.protect_uppercase(entry["title"])
 
     # Write bib string
     return writer.write(db)
