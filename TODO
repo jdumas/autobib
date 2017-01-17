@@ -23,3 +23,12 @@ Features:
 
 Options:
 	☐	-e: --eval bib (show diff dist between filenames and bib entry) ?
+
+
+User Experience:
+	☐	Improve logging
+	☐	Argparse subcommands
+	☐	.biblist destination folder
+	☐	Improve writing to output files
+	☐	Write years in output (+arg "format %a %y %t" / .autobibrc)
+	☐	Write .queried.json / .rejected.txt in debug only

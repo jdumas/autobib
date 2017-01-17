@@ -1,8 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+# System libs
 import re
 import unicodedata
+
+# Third party libs
+import titlecase
+
+# Local libs
+import config
 
 accents = {
     0x0300: '`', 0x0301: "'", 0x0302: '^', 0x0308: '"',
@@ -69,5 +76,21 @@ def remove_nested_braces(s):
     return s
 
 
+def protect_uppercase(s):
+    """
+    Protect uppercase words defined in config.py
+    """
+    def protect_one(word, **_kwargs):
+        if word.upper() in config.uppercase_words:
+            return '{' + word.upper() + '}'
+        if '-' in word:
+            return
+        if "/" in word and "//" not in word:
+            return
+        return word
+    return titlecase.titlecase(s, callback=protect_one)
+
+
 if __name__ == '__main__':
     print(uni2tex("Klüft skräms çinför på fédéral électoral große"))
+    print(protect_uppercase("Lorem BFGS Ipsum 3D Computer-3D 3DGraphics"))
