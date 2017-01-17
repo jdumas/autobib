@@ -28,6 +28,22 @@ def print_score(sc):
     print("Score: " + termcolor.colored(sc, color))
 
 
+def score_type(s):
+    """
+    Assign a score to a work type depending on a user-defined preference list.
+    The list of available types can be obtained via the following url:
+    http://api.crossref.org/types
+    """
+    preference_list = [
+        "journal-article",
+        "book"
+    ]
+    if s in preference_list:
+        return preference_list.index(s) + 1
+    else:
+        return 0
+
+
 def pick_best(title, item1, item2):
     """
     Pick best record among two items with identical scores.
@@ -40,7 +56,16 @@ def pick_best(title, item1, item2):
         return item2
     r1 = compare(item1['title'][0])
     r2 = compare(item2['title'][0])
-    return item1 if r1 > r2 else item2
+    if r1 > r2:
+        return item1
+    elif r2 > r1:
+        return item2
+    else:
+        # Try to find other discriminating criteria... e.g. prefer journal-articles
+        if score_type(item1["type"]) > score_type(item2["type"]):
+            return item1
+        else:
+            return item2
 
 
 def crossref_query(authors, title):
