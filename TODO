@@ -21,6 +21,8 @@ Features:
 	✔	--extract: extract list of pdf from existing .bib @critical @done (14-11-16 13:56)
 	✔	--update-project-keys: take 2 .bib file and 1 folder, and update keys in all .tex @critical @done (14-11-16 13:57)
 
+		Feature to abbreviate journals entries...
+
 Options:
 	☐	-e: --eval bib (show diff dist between filenames and bib entry) ?
 
