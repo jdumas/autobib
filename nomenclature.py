@@ -108,7 +108,7 @@ def gen_filename(record):
         prefix = '(' + ', '.join(last_names) + ') '
 
     title = utils.get_title(record_copy)
-    title = title.replace('$\Lambda_{훜fty}$ ', 'λ∞')
+    title = title.replace('$\\Lambda_{훜fty}$ ', 'λ∞')
     title = re.sub('\\\\textendash  ', '- ', title)
     title = utils.strip_accents(codecs.decode(title, "ulatex"))
     title = re.sub('([\\{\\}])', '', title)
@@ -116,7 +116,7 @@ def gen_filename(record):
     title = re.sub(' *— *', ' - ', title)
     title = re.sub('–', '-', title)
     title = re.sub('/', '-', title)
-    title = re.sub('\\$\\mathplus \\$', '+', title)
+    # title = re.sub('\\$\\mathplus \\$', '+', title)
     title = re.sub('\\\\textquotesingle ', "'", title)
     title = to_titlecase(title)
     title = re.sub('"', '', title)
