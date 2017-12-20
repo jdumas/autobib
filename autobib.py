@@ -398,8 +398,9 @@ def parse_args():
     parser.add_argument('filename', nargs='?', help="input file/folder")
     parser.add_argument('extra', nargs='?', default='.',
                         help="extra argument (if applicable)")
-    parser.add_argument('-b', '--backup', default=False, action='store_true',
-                        help="backup files upon writing")
+    parser.add_argument('-b', '--backup', action='store_true', help="backup files upon writing")
+    parser.add_argument('-B', '--no-backup', dest='backup', action='store_false', help="disable backup files")
+    parser.set_defaults(backup=True)
     parser.add_argument('-c', '--crossref', default=False, action='store_true',
                         help="query missing from Crossref")
     parser.add_argument('-g', '--google', default=False, action='store_true',

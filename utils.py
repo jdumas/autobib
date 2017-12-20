@@ -416,6 +416,8 @@ def write_remap_script(subst, output_folder):
 
 
 if __name__ == "__main__":
-    s = 'Tim Van Hook'
-    t = [{'family': 'Van Hook', 'given': 'Tim', 'affiliation': [], 'yay':1}]
-    fix_author_field({'author': s}, {'author': t})
+    def main():
+        s = 'Tim Van Hook'
+        t = [{'family': 'Van Hook', 'given': 'Tim', 'affiliation': [], 'yay':1}]
+        fix_author_field({'author': s}, {'author': t})
+    main()
