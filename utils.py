@@ -273,7 +273,7 @@ def read_bib_file(filename, homogenize=False):
     """
 
     # Read input bibtex file
-    bibtex_str = ""
+    bibtex_str = " "
     if os.path.exists(filename):
         with open(filename, 'r', encoding='utf-8') as bibfile:
             bibtex_str = bibfile.read()

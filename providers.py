@@ -4,6 +4,7 @@
 # System libs
 import re
 import difflib
+import urllib
 
 # Third party libs
 import termcolor
@@ -84,9 +85,12 @@ def crossref_query(authors, title):
         match given by Crossref.
     """
     cr = Crossref()
-    query = ['+"' + name + '"' for name in authors]
-    query = ' '.join(query) + ' +"' + title + '"'
-    x = cr.works(query=query)
+    # works?query.title=An+Improved+Adaptive+Constraint+Aggregation+for+Integrated+Layout+and+Topology+Optimization&query.author=Gao+Zhu+Zhang+Zhou&sort=score&rows=1
+    # query = ['+' + name + '' for name in authors]
+    # query = 'query.title=' + urllib.parse.quote_plus(title) + '&query.author=' + urllib.parse.quote_plus(' '.join(authors)) + '&sort=score&rows=1'
+    # print(query)
+    x = cr.works(query_title=urllib.parse.quote_plus(title), query_author=urllib.parse.quote_plus(' '.join(authors)), sort='score', limit=1)
+    # x = cr.works(query=query)
     assert x['status'] == "ok"
 
     # No result found
@@ -95,6 +99,7 @@ def crossref_query(authors, title):
         return (None, [], 0)
 
     best_item = x['message']['items'][0]
+    # print(json.dumps(best_item, indent=4))
     for item in x['message']['items']:
         if item['score'] < best_item['score']:
             break
@@ -124,8 +129,11 @@ def crossref_query(authors, title):
     res_bib = db.entries[0]
 
     # If article has subtitle(s), fix bibtex entry
-    subtitles = [x for x in res_json['subtitle'] if not str.isupper(x)]
-    if len(subtitles) > 0:
+    subtitles = None
+    if 'subtitle' in res_json:
+        subtitles = [x for x in res_json['subtitle'] if not str.isupper(x)]
+
+    if subtitles:
         # Discard subtitle that are all uppercase
         title = ' '.join(res_json['title'])
         subtitle = ' '.join(subtitles)
