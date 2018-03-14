@@ -89,7 +89,16 @@ def crossref_query(authors, title):
     # query = ['+' + name + '' for name in authors]
     # query = 'query.title=' + urllib.parse.quote_plus(title) + '&query.author=' + urllib.parse.quote_plus(' '.join(authors)) + '&sort=score&rows=1'
     # print(query)
-    x = cr.works(query_title=urllib.parse.quote_plus(title), query_author=urllib.parse.quote_plus(' '.join(authors)), sort='score', limit=1)
+    if ''.join(authors):
+        args = dict(
+            query_title=urllib.parse.quote_plus(title),
+            query_author=urllib.parse.quote_plus(' '.join(authors))
+        )
+    else:
+        args = dict(
+            query=urllib.parse.quote_plus(title),
+        )
+    x = cr.works(sort='score', limit=1, **args)
     # x = cr.works(query=query)
     assert x['status'] == "ok"
 
