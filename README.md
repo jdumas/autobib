@@ -6,7 +6,7 @@ The way it works is that you simply provide `autobib.py` with the root of your f
 It can also do other stuff, such as autoformating you `.bib` files, generating unique keys, and so on.
 
 
-This program has been tested with **Python 3.5**, and I don't know if it works with Python 2.7.
+This program has been tested with **Python 3.8**, and I don't know if it works with Python 2.7.
 
 
 Examples
@@ -33,16 +33,10 @@ Will synchronize the entries in your bibtex with the files in each folder (by up
 Dependencies
 ------------
 
-Pip only:
+Using conda:
 
-    pip3 install --user habanero scholarly bibtexparser latexcodec titlecase termcolor colorama
-
-Mixed (Archlinux):
-
-    sudo pacman -S python-termcolor python-colorama
-    yaourt -S python-bibtexparser
-    pip install --user habanero scholarly titlecase latexcodec
-
+    conda env create -f autobib.yml
+    conda activate autobib
 
 Usage
 -----
