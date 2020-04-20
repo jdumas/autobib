@@ -91,7 +91,7 @@ def crossref_query(authors, title):
     # print(query)
     if ''.join(authors):
         args = dict(
-            query_title=urllib.parse.quote_plus(title),
+            query_bibliographic=urllib.parse.quote_plus(title),
             query_author=urllib.parse.quote_plus(' '.join(authors))
         )
     else:
