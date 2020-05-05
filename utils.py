@@ -14,6 +14,7 @@ import unicodedata
 # Third party libs
 import termcolor
 import bibtexparser
+from loguru import logger
 from bibtexparser.bwriter import BibTexWriter
 from bibtexparser.bparser import BibTexParser
 
@@ -226,12 +227,11 @@ def guess_manual_files(folder, queried_db, update_queried_db=True):
         manual_database = read_bib_file(manual_bib_path, homogenize=True)
         for entry in manual_database.entries:
             guess = nomenclature.gen_filename(entry)
-            file = encode_filename_field(guess)
             best_score = 0.0
             best_idx = -1
             # Compare again other file entries
             for key, idx in sorted(files.items()):
-                sc = simratio(key, file)
+                sc = simratio(key, guess)
                 if sc > best_score:
                     best_score = sc
                     best_idx = idx
@@ -241,8 +241,10 @@ def guess_manual_files(folder, queried_db, update_queried_db=True):
             # If best match is good enough, override old entry
             if update_queried_db:
                 if best_score > 0.95:
+                    logger.info("Found a match for entry {} --> file {}", guess, match)
                     queried_db.entries[best_idx] = entry
                 else:
+                    logger.warning("Could not find a match for entry {} (best match was {})", guess, match)
                     queried_db.entries.append(entry)
             else:
                 files[match] = -1
@@ -281,7 +283,7 @@ def read_bib_file(filename, homogenize=False):
     # Choose parser
     parser = None
     if homogenize:
-        parser = BibTexParser()
+        parser = BibTexParser(common_strings=True)
         parser.customization = nomenclature.homogenize_latex_encoding
 
     # Create database from string

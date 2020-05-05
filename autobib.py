@@ -5,12 +5,14 @@
 import re
 import os
 import ast
+import sys
 import json
 import argparse
 
 # Third party libs
 import colorama
 import termcolor
+from loguru import logger
 from bibtexparser.bibdatabase import BibDatabase
 
 # Local libs
@@ -429,6 +431,8 @@ def parse_args():
 if __name__ == "__main__":
     def run():
         colorama.init()
+        logger.remove()
+        logger.add(sys.stdout, colorize=True, format="<green>{time:HH:mm}</green> <level>{message}</level>")
         args = parse_args()
         input_path = "."
         if args.filename:
