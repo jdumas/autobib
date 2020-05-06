@@ -220,17 +220,19 @@ def homogenize_latex_encoding(record):
     return record
 
 
+def is_ascii(s):
+    return len(s) == len(s.encode())
+
+
 def encode_ascii_latex(record):
     """
     Translate all non-ascii unicode characters in an entry to their equivalent
     latex macro.
     """
-    def isascii(s):
-        return len(s) == len(s.encode())
     for val in record:
-        if not isascii(record[val]):
+        if not is_ascii(record[val]):
             record[val] = latex.uni2tex(record[val])
             # for k, v in unicode_to_latex:
-            #    if k in record[val]:
-            #        record[val] = record[val].replace(k, v)
+            #     if k in record[val]:
+            #         record[val] = record[val].replace(k, v)
     return record

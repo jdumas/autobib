@@ -274,7 +274,8 @@ def merge_folder_tree(folder, use_backup):
         for entry in subdb.entries:
             filename = utils.decode_filename_field(entry['file'])
             filename = os.path.join(reldir, filename)
-            entry['file'] = utils.encode_filename_field(filename)
+            del entry['file']
+            # entry['file'] = utils.encode_filename_field(filename)
         db.entries += subdb.entries
     # Remove duplicated entries
     entries_dict = db.entries_dict

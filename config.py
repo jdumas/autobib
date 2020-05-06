@@ -26,7 +26,7 @@ mixedcase_words = [
 crossref_accept_threshold = 2.8
 
 # Whether to write accented characters (True), or their latex equivalent (False)
-use_utf8_characters = True
+use_utf8_characters = False
 
 # Protect uppercase words when writing the 'title' field
 protect_uppercase = True

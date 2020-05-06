@@ -45,6 +45,21 @@ MONTHS = [
     'dec',
 ]
 
+MONTHS_FULL = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December',
+]
+
 
 def strip_accents(s):
     return ''.join(c for c in unicodedata.normalize('NFD', s)
@@ -309,8 +324,10 @@ def write_bib(db, order=False):
 
     # Replace month by numeric value
     for entry in db.entries:
-        if 'month' in entry and entry['month'] in MONTHS:
-            entry['month'] = '{:02d}'.format(MONTHS.index(entry['month']) + 1)
+        if 'month' in entry:
+            for x in [MONTHS, MONTHS_FULL]:
+                if entry['month'] in x:
+                    entry['month'] = '{:02d}'.format(x.index(entry['month']) + 1)
 
     if order:
         # Manual sort
