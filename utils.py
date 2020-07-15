@@ -254,13 +254,19 @@ def guess_manual_files(folder, queried_db, update_queried_db=True):
             match, _ = most_similar_filename(guess, folder)
             entry['file'] = encode_filename_field(match)
             # If best match is good enough, override old entry
-            if update_queried_db:
+            if update_queried_db and best_idx >= 0:
                 if best_score > 0.95:
                     logger.info("Found a match for entry {} --> file {}", guess, match)
                     queried_db.entries[best_idx] = entry
                 else:
-                    logger.warning("Could not find a match for entry {} (best match was {})", guess, match)
-                    queried_db.entries.append(entry)
+                    logger.warning("Could not find a match for entry:\n- Query: {}\n- Match: {}", guess, match)
+                    res = None
+                    while res not in ['y', 'n']:
+                        res = input("Use best match for this file? [y/n]")
+                    if res == 'y':
+                        queried_db.entries[best_idx] = entry
+                    else:
+                        queried_db.entries.append(entry)
             else:
                 files[match] = -1
     return files
@@ -294,6 +300,7 @@ def read_bib_file(filename, homogenize=False):
     if os.path.exists(filename):
         with open(filename, 'r', encoding='utf-8') as bibfile:
             bibtex_str = bibfile.read()
+    bibtex_str += " "
 
     # Choose parser
     parser = None
