@@ -1,0 +1,10 @@
+name: pdftitle
+channels:
+  - conda-forge
+dependencies:
+  - python
+  - unidecode
+  - pdfminer
+  - pip
+  - pip:
+    - pyPDF

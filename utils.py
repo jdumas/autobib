@@ -115,12 +115,12 @@ def get_pdf_list(folder):
     Additionally, if the folder contains a file named ".biblist", reads
     the content of the file as additional pdfs to process.
     """
-    all_pdfs = list(glob.glob(os.path.join(folder, "*.pdf")))
+    all_pdfs = [os.path.basename(x) for x in glob.glob(os.path.join(folder, "*.pdf"))]
     biblist_file = os.path.join(folder, '.biblist')
     if os.path.exists(biblist_file):
         with open(biblist_file, 'r') as f:
-            for l in f:
-                all_pdfs.append(l.rstrip())
+            for line in f:
+                all_pdfs.append(line.rstrip())
     return sorted(all_pdfs)
 
 
@@ -242,33 +242,47 @@ def guess_manual_files(folder, queried_db, update_queried_db=True):
         manual_database = read_bib_file(manual_bib_path, homogenize=True)
         for entry in manual_database.entries:
             guess = nomenclature.gen_filename(entry)
-            best_score = 0.0
-            best_idx = -1
-            # Compare again other file entries
+            logger.warning("Try to find a match for manual entry: {}", guess)
+            queried_best_score = 0.0
+            queried_best_idx = -1
+            queried_best_key = None
+            # Find the entry from .queried that is the most similar to the manual entry
             for key, idx in sorted(files.items()):
                 sc = simratio(key, guess)
-                if sc > best_score:
-                    best_score = sc
-                    best_idx = idx
-            # Update 'file' field
-            match, _ = most_similar_filename(guess, folder)
+                if sc > queried_best_score:
+                    queried_best_score = sc
+                    queried_best_idx = idx
+                    queried_best_key = key
+            # Find most similar filename in the folder being processed
+            match, match_score = most_similar_filename(guess, folder)
+            if match_score < 0.9:
+                logger.warning("Cannot find a file matching manual entry (simratio: {}).\n- Entry: {}\n- Match: {}", match_score, guess, match)
+                res = None
+                while res not in ['y', 'n']:
+                    res = input("Use best match for this entry? [y/n]")
+                if res == 'n':
+                    continue
+            else:
+                logger.info("Found a file matching manual entry: {}", guess)
             entry['file'] = encode_filename_field(match)
-            # If best match is good enough, override old entry
-            if update_queried_db and best_idx >= 0:
-                if best_score > 0.95:
-                    logger.info("Found a match for entry {} --> file {}", guess, match)
-                    queried_db.entries[best_idx] = entry
-                else:
-                    logger.warning("Could not find a match for entry:\n- Query: {}\n- Match: {}", guess, match)
+            files[match] = -1
+            # If best match is good enough, override queried entry with the manual one
+            if update_queried_db:
+                if queried_best_idx >= 0 and queried_best_score > 0.90:
+                    logger.info("Found a query matching manual entry: {}", guess)
+                    queried_db.entries[queried_best_idx] = entry
+                elif queried_best_idx >= 0 and queried_best_score > 0.80:
+                    logger.warning("Could not find a query matching manual entry (simratio: {}).\n- Entry: {}\n- Query: {}", queried_best_score, guess, queried_best_key)
                     res = None
                     while res not in ['y', 'n']:
-                        res = input("Use best match for this file? [y/n]")
+                        res = input("Replace this query with the manual entry? [y/n]")
                     if res == 'y':
-                        queried_db.entries[best_idx] = entry
+                        queried_db.entries[queried_best_idx] = entry
                     else:
                         queried_db.entries.append(entry)
-            else:
-                files[match] = -1
+                else:
+                    logger.debug("Could not find a query matching manual entry: {}", guess)
+                    queried_db.entries.append(entry)
     return files
 
 
