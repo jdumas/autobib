@@ -1,0 +1,22 @@
+name: autobib
+channels:
+  - conda-forge
+dependencies:
+  - python=3.8
+  - prompt_toolkit # interactive tui
+  - pyinquirer # interactive tui
+  - rich # rich terminal print
+  - fuzzyfinder # fuzzy finder
+  - chardet # detect encoding
+  - filetype # detect MIME file types
+  - arxiv2bib # arxiv provider
+  - bibtexparser # parse bibtex
+  - click # command line interface
+  - habanero # crossref provider
+  - isbnlib # info from isbn
+  - python-doi # lookup doi in pdf
+  - python-slugify # turn unicode string into urls
+  - doi2bib # doi2bib
+  - title2bib
+  - arxivcheck
+  - scihub2pdf
